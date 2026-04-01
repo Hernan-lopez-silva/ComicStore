@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Tienda de Comics en Línea
 
 Este proyecto se realizó como parte de la evaluación de la asignatura Desarrollo Web, para la carrera Analista Programador Computacional, Duoc UC.
@@ -255,3 +256,7 @@ document.getElementById('region').addEventListener('change', function() {
 
 
 
+=======
+# ComicStore
+Proyecto de calidad
+>>>>>>> 4459a7b139c407f42fdc4eab2f207f4ac2c77b5a
