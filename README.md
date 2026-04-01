@@ -1,0 +1,2 @@
+# ComicStore
+Proyecto de calidad
