@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">
+<style>
+    .webpay-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .webpay-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 30px;
+        text-center;
+        border-radius: 10px 10px 0 0;
+    }
+    .webpay-logo {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .card-preview {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 20px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}
+{% block title %}WebPay - Pago Seguro{% endblock %}
+{% block content %}
+
+<div class="d-none" aria-hidden="true">{% csrf_token %}</div>
+<div class="container py-5">
+    <div class="webpay-container">
+        <div class="card shadow-lg">
+            <div class="webpay-header">
+                <div class="webpay-logo">🔐 WebPay</div>
+                <p class="mb-0">Transbank - Pago Seguro</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Información de la orden -->
+                <div class="alert alert-info">
+                    <h6 class="mb-2"><strong>Orden #{{ order.order_id }}</strong></h6>
+                    <p class="mb-1">Comercio: Comic Store</p>
+                    <p class="mb-0"><strong>Total a pagar: ${{ order.total|floatformat:0 }}</strong></p>
+                </div>
+
+                <!-- Formulario de tarjeta -->
+                <form id="webpayForm">
+                    <div class="mb-3">
+                        <label for="card_number" class="form-label">Número de Tarjeta</label>
+                        <input type="text" class="form-control" id="card_number" maxlength="19" 
+                               placeholder="XXXX XXXX XXXX XXXX" required>
+                        <small class="text-muted">Tarjetas de prueba: 4111 1111 1111 1111 (Visa)</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expiry_date" class="form-label">Fecha de Expiración</label>
+                            <input type="text" class="form-control" id="expiry_date" 
+                                   placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="cvv" 
+                                   placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="card_holder" class="form-label">Nombre del Titular</label>
+                        <input type="text" class="form-control" id="card_holder" 
+                               placeholder="Como aparece en la tarjeta" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rut" class="form-label">RUT del Titular</label>
+                        <input type="text" class="form-control" id="rut" 
+                               placeholder="12.345.678-9" required>
+                    </div>
+
+                    <!-- Vista previa de tarjeta -->
+                    <div class="card-preview">
+                        <div class="mb-4">
+                            <small>NÚMERO DE TARJETA</small>
+                            <div class="fs-5" id="preview_card_number">•••• •••• •••• ••••</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <small>TITULAR</small>
+                                <div id="preview_card_holder">NOMBRE APELLIDO</div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <small>EXPIRA</small>
+                                <div id="preview_expiry">••/••</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="accept_terms" required>
+                        <label class="form-check-label" for="accept_terms">
+                            Acepto los términos y condiciones de WebPay
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-lock"></i> Pagar ${{ order.total|floatformat:0 }}
+                        </button>
+                        <a href="{% url 'carrito' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt"></i> 
+                        Esta es una simulación de pago. No se realizará ningún cargo real.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('webpayForm');
+    const cardNumber = document.getElementById('card_number');
+    const expiryDate = document.getElementById('expiry_date');
+    const cvv = document.getElementById('cvv');
+    const cardHolder = document.getElementById('card_holder');
+    
+    // Preview de tarjeta
+    cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+        document.getElementById('preview_card_number').textContent = 
+            formattedValue || '•••• •••• •••• ••••';
+    });
+    
+    expiryDate.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+        document.getElementById('preview_expiry').textContent = value || '••/••';
+    });
+    
+    cardHolder.addEventListener('input', function(e) {
+        document.getElementById('preview_card_holder').textContent = 
+            e.target.value.toUpperCase() || 'NOMBRE APELLIDO';
+    });
+    
+    cvv.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+    
+    // Enviar formulario
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+        
+        try {
+            const response = await fetch('{% url "simulate_payment" order.order_id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    card_number: cardNumber.value,
+                    expiry_date: expiryDate.value,
+                    cvv: cvv.value,
+                    card_holder: cardHolder.value,
+                    rut: document.getElementById('rut').value
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = '{% url "payment_success" order.order_id %}';
+            } else {
+                window.location.href = '{% url "payment_failed" order.order_id %}';
+            }
+        } catch (error) {
+            alert('Error al procesar el pago: ' + error.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock"></i> Pagar ${{ order.total|floatformat:0 }}';
+        }
+    });
+});
+</script>
+{% endblock %}

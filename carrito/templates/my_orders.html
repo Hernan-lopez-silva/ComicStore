@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
+{% block title %}Mis Órdenes - Comic Store{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-shopping-bag"></i> Mis Órdenes</h2>
+            <p class="text-muted">Historial completo de tus compras</p>
+        </div>
+    </div>
+
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <!-- Información principal -->
+                        <div class="col-md-3">
+                            <h6 class="mb-1"><strong>Orden #{{ order.order_id|slice:":8" }}</strong></h6>
+                            <small class="text-muted">{{ order.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-2 text-center">
+                            {% if order.payment_status == 'completed' %}
+                            <span class="badge bg-success py-2 px-3">
+                                <i class="fas fa-check-circle"></i> Completada
+                            </span>
+                            {% elif order.payment_status == 'pending' %}
+                            <span class="badge bg-warning py-2 px-3">
+                                <i class="fas fa-clock"></i> Pendiente
+                            </span>
+                            {% elif order.payment_status == 'processing' %}
+                            <span class="badge bg-info py-2 px-3">
+                                <i class="fas fa-spinner"></i> Procesando
+                            </span>
+                            {% elif order.payment_status == 'failed' %}
+                            <span class="badge bg-danger py-2 px-3">
+                                <i class="fas fa-times-circle"></i> Fallida
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary py-2 px-3">
+                                {{ order.payment_status }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Productos -->
+                        <div class="col-md-4">
+                            <small class="text-muted">Productos:</small><br>
+                            {% for item in order.items.all|slice:":2" %}
+                            <small>{{ item.comic_title }} (x{{ item.quantity }})</small><br>
+                            {% endfor %}
+                            {% if order.items.count > 2 %}
+                            <small class="text-muted">+ {{ order.items.count|add:"-2" }} más...</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Total y Acciones -->
+                        <div class="col-md-3 text-md-end">
+                            <h5 class="mb-2">${{ order.total|floatformat:0 }}</h5>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'order_detail' order.order_id %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> Ver Detalle
+                                </a>
+                                {% if order.payment_status == 'pending' or order.payment_status == 'failed' %}
+                                <a href="{% url 'payment_process' order.order_id %}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-credit-card"></i> Pagar
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional en fila expandible -->
+                    <div class="row mt-3 pt-3 border-top">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-credit-card"></i> 
+                                {{ order.payment_gateway.display_name }}
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                {{ order.shipping_city }}, {{ order.shipping_region }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación (si se implementa después) -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <p class="text-muted">Total de órdenes: {{ orders.count }}</p>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Sin órdenes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-shopping-bag fa-5x text-muted mb-4"></i>
+                    <h4>No tienes órdenes aún</h4>
+                    <p class="text-muted mb-4">Explora nuestra tienda y realiza tu primera compra</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Ir a la Tienda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/scriptCarro.js' %}"></script>
+{% endblock %}

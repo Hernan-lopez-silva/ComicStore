@@ -26,10 +26,10 @@ SECRET_KEY = 'django-insecure-*unvbh0q@xrrf@vcc5!2yreot@5f&dd7v1%dqqxpb7dge9x68i
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False #en produccion
-DEBUG = True
+DEBUG = False
 
 #ALLOWED_HOSTS = ['comicstore.up.railway.app'] #en produccion
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
 
 # Application definition
@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    #'whitenoise.middleware.WhiteNoiseMiddleware', activado en produccion 
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -135,6 +135,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'comicstore' / 'static']
+# Necesario para servir estáticos con DEBUG=False (p. ej. whitenoise tras collectstatic)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -161,5 +163,5 @@ LOGGING = {
 
 #CSRF_TRUSTED_ORIGINS = ['https://comicstore.up.railway.app'] #permite login en produccion
 
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #se usa en produccion
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' #guarda estaticos, en produccion
+# Manifest storage puede romper referencias si no se usa hashing en templates; dejar default salvo deploy avanzado
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

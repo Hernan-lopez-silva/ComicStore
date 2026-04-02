@@ -13,7 +13,7 @@
             <a href="{% url 'crear' %}" class="btn btn-primary float-end">Crear Comic</a> 
         </div>
 
-        </div class="table-responsive">
+        <div class="table-responsive">
             <table class="table table-striped">
         <thead>
             <tr class="text-center">
@@ -33,12 +33,12 @@
                 <td class="align-middle">{{ comic.price }}</td>
                 <td class="text-center"><img class="thumbnail" src="{{ comic.img_path }}" alt=""></td>
                 <td class="align-middle"><a href="{% url 'editar' comic.id %}"><i class="fa-regular fa-pen-to-square fa-2x"></i></a></td>
-                <td class="align-middle"><a href="{% url 'eliminar' comic.id %}" onclick="return confirm('¿Estás seguro de que quieres eliminar este cómic?');"><i class="fa-regular fa-trash-can fa-2x"></i></i></a></td>
+                <td class="align-middle"><a href="{% url 'eliminar' comic.id %}" onclick="return confirm('¿Estás seguro de que quieres eliminar este cómic?');"><i class="fa-regular fa-trash-can fa-2x"></i></a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-        <div>
+        </div>
 
     </div>
 </div>

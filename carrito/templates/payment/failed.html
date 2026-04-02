@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
+{% block title %}Pago Rechazado{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-body text-center p-5">
+                    <!-- Icono de error -->
+                    <div class="mb-4">
+                        <div class="error-cross">
+                            <div class="cross-icon">
+                                <span class="cross-line line-left"></span>
+                                <span class="cross-line line-right"></span>
+                                <div class="cross-circle"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-danger mb-3">Pago Rechazado</h1>
+                    <p class="lead mb-4">No pudimos procesar tu pago</p>
+
+                    <!-- Detalles del error -->
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Motivo del rechazo</h5>
+                        {% if simulation %}
+                        <p class="mb-0"><strong>{{ simulation.response_message }}</strong></p>
+                        <small class="text-muted">Código de error: {{ simulation.response_code }}</small>
+                        {% else %}
+                        <p class="mb-0">La transacción no pudo ser completada.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información de la orden -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Detalles de la Orden Fallida</h5>
+                        </div>
+                        <div class="card-body text-start">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <strong>Orden:</strong> #{{ order.order_id }}
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Monto:</strong> ${{ order.total|floatformat:0 }}
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Método de pago:</strong> {{ order.payment_gateway.display_name }}
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Estado:</strong> <span class="badge bg-danger">Fallido</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Posibles causas -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Posibles Causas</h5>
+                        </div>
+                        <div class="card-body text-start">
+                            <ul class="mb-0">
+                                <li>Fondos insuficientes en la tarjeta</li>
+                                <li>Tarjeta vencida o no válida</li>
+                                <li>Datos de la tarjeta incorrectos</li>
+                                <li>La transacción fue rechazada por tu banco</li>
+                                <li>Límite de compra excedido</li>
+                                <li>Problema de conexión con la pasarela de pago</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Productos del carrito (aún disponibles) -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Productos en tu Orden</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Precio</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items.all %}
+                                        <tr>
+                                            <td>{{ item.comic_title }}</td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">${{ item.unit_price|floatformat:0 }}</td>
+                                            <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-danger">
+                                            <td colspan="3" class="text-end"><strong>Total no procesado:</strong></td>
+                                            <td class="text-end"><strong>${{ order.total|floatformat:0 }}</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recomendaciones -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> ¿Qué puedes hacer?</h6>
+                        <ul class="mb-0 text-start">
+                            <li>Verifica que los datos de tu tarjeta sean correctos</li>
+                            <li>Asegúrate de tener fondos suficientes</li>
+                            <li>Intenta con otra tarjeta o método de pago</li>
+                            <li>Contacta a tu banco para verificar si hay restricciones</li>
+                            <li>Si el problema persiste, contáctanos para ayudarte</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <a href="{% url 'payment_process' order.order_id %}" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Reintentar Pago
+                        </a>
+                        <a href="{% url 'checkout' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Cambiar Método de Pago
+                        </a>
+                        <a href="{% url 'carrito' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-shopping-cart"></i> Volver al Carrito
+                        </a>
+                    </div>
+
+                    <!-- Soporte -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6><i class="fas fa-headset"></i> ¿Necesitas Ayuda?</h6>
+                        <p class="mb-2">Nuestro equipo de soporte está disponible para asistirte</p>
+                        <a href="{% url 'contacto' %}" class="btn btn-sm btn-outline-primary">
+                            Contactar Soporte
+                        </a>
+                    </div>
+
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> 
+                            Esta es una simulación. No se ha realizado ningún cargo en tu cuenta.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-cross {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+.error-cross .cross-icon {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    border-radius: 50%;
+    box-sizing: content-box;
+    border: 4px solid #f44336;
+}
+.error-cross .cross-icon .cross-line {
+    height: 5px;
+    background-color: #f44336;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 10;
+    top: 48px;
+    width: 50px;
+}
+.error-cross .cross-icon .cross-line.line-left {
+    left: 25px;
+    transform: rotate(45deg);
+    animation: cross-line-left 0.75s;
+}
+.error-cross .cross-icon .cross-line.line-right {
+    right: 25px;
+    transform: rotate(-45deg);
+    animation: cross-line-right 0.75s;
+}
+.error-cross .cross-icon .cross-circle {
+    top: -4px;
+    left: -4px;
+    z-index: 10;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    box-sizing: content-box;
+    border: 4px solid rgba(244, 67, 54, .5);
+}
+
+@keyframes cross-line-left {
+    0% {
+        width: 0;
+        left: 50px;
+    }
+    50% {
+        width: 0;
+        left: 50px;
+    }
+    100% {
+        width: 50px;
+        left: 25px;
+    }
+}
+@keyframes cross-line-right {
+    0% {
+        width: 0;
+        right: 50px;
+    }
+    50% {
+        width: 0;
+        right: 50px;
+    }
+    100% {
+        width: 50px;
+        right: 25px;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block js %}
+<script>
+// Mantener el carrito para que el usuario pueda reintentar
+console.log('Pago fallido. El carrito se ha mantenido para reintentar.');
+</script>
+{% endblock %}

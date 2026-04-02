@@ -34,11 +34,12 @@
                         <button id="carro" type="button" class="btn btn-primary mt-3"><i class="fas fa-shopping-cart me-1"></i><span class="info">Añadir al Carrito</span></button>
                     </div>
                     <div class="mt-3">
-                        <p class="spacer2 mt-5 subtitulo">Descripción:</p>
-                        <p class="info">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa sequi dignissimos aliquid dolorem
-                            pariatur corrupti earum dolor enim non hic. Eum eos molestias, quis vero aliquid ullam rerum
-                            consequuntur perspiciatis.
-                        </p>
+                        <p class="spacer2 mt-5 subtitulo">Descripción</p>
+                        {% if comic.description %}
+                        <div class="info comic-description">{{ comic.description|linebreaks }}</div>
+                        {% else %}
+                        <p class="info text-muted">Sin descripción disponible.</p>
+                        {% endif %}
                     </div>
                   </div>
                 </div>

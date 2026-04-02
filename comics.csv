@@ -1,21 +1,21 @@
-id,title,img_path,price
-82967,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",12000
-82965,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",10000
-82970,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/c/80/5e3d7536c8ada.jpg",9000
-1689,Official Handbook of the Marvel Universe (2004) #10 (MARVEL KNIGHTS),"http://i.annihil.us/u/prod/marvel/i/mg/9/30/4bc64df4105b9.jpg",5000
-15808,Ultimate Spider-Man (2000) #110 (Mark Bagley Variant),"http://i.annihil.us/u/prod/marvel/i/mg/c/e0/4bc4947ea8f4d.jpg",15000
-1886,Official Handbook of the Marvel Universe (2004) #12 (SPIDER-MAN),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/4bc64020a4ccc.jpg",8000
-26620,The Stand: American Nightmares HC (Hardcover),"http://i.annihil.us/u/prod/marvel/i/mg/9/00/4bb4c3523c46f.jpg",5000
-291,Ant-Man (2003) #1,"http://i.annihil.us/u/prod/marvel/i/mg/6/e0/4bc6a2497684e.jpg",6000
-2088,Official Handbook of the Marvel Universe (2004) #14 (FANTASTIC FOUR),"http://i.annihil.us/u/prod/marvel/i/mg/9/90/4bc6353e5fc56.jpg",7000
-1590,Official Handbook of the Marvel Universe (2004) #9 (THE WOMEN OF MARVEL),"http://i.annihil.us/u/prod/marvel/i/mg/9/b0/4c7d666c0e58a.jpg",8000
-15878,Hedge Knight II: Sworn Sword (2007) #1 (Yu Variant),"http://i.annihil.us/u/prod/marvel/i/mg/9/50/4bc49463dad62.jpg",20000
-1749,Official Handbook of the Marvel Universe (2004) #11 (X-MEN - AGE OF APOCALYPSE),"http://i.annihil.us/u/prod/marvel/i/mg/c/b0/4bc6494ed6eb4.jpg",5000
-1994,Official Handbook of the Marvel Universe (2004) #13 (TEAMS),"http://i.annihil.us/u/prod/marvel/i/mg/f/20/4bc63a47b8dcb.jpg",9000
-1158,ULTIMATE X-MEN VOL. 5: ULTIMATE WAR TPB (Trade Paperback),"http://i.annihil.us/u/prod/marvel/i/mg/2/f0/4bc6670c80007.jpg",12000
-428,Ant-Man (2003) #4,"http://i.annihil.us/u/prod/marvel/i/mg/4/20/4bc697c680890.jpg",11000
-331,Gun Theory (2003) #4,"http://i.annihil.us/u/prod/marvel/i/mg/c/60/4bc69f11baf75.jpg",6000
-15094,Silver Surfer (1987),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",9000
-376,Ant-Man (2003) #3,"http://i.annihil.us/u/prod/marvel/i/mg/d/70/4bc69c7e9b9d7.jpg",666
-323,Ant-Man (2003) #2,"http://i.annihil.us/u/prod/marvel/i/mg/f/20/4bc69f33cafc0.jpg",1000
-183,Startling Stories: The Incorrigible Hulk (2004) #1,"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",2000
+id,title,img_path,price,description
+82967,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",12000,"Catálogo promocional Marvel con adelantos de series próximas portadas y calendario editorial para coleccionistas."
+82965,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",10000,"Número de Marvel Previews con fichas de títulos en curso y arte conceptual de próximos tomos del universo Marvel."
+82970,Marvel Previews (2017),"http://i.annihil.us/u/prod/marvel/i/mg/c/80/5e3d7536c8ada.jpg",9000,"Revista de avances editoriales: novedades superheroicas y material exclusivo para seguir el line-up Marvel."
+1689,Official Handbook of the Marvel Universe (2004) #10 (MARVEL KNIGHTS),"http://i.annihil.us/u/prod/marvel/i/mg/9/30/4bc64df4105b9.jpg",5000,"Guía oficial de enciclopedia: entradas detalladas sobre héroes y villanos bajo el sello Marvel Knights."
+15808,Ultimate Spider-Man (2000) #110 (Mark Bagley Variant),"http://i.annihil.us/u/prod/marvel/i/mg/c/e0/4bc4947ea8f4d.jpg",15000,"Edición Ultimate con variante de portada de Mark Bagley: Peter Parker en la línea Ultimate de alto voltaje."
+1886,Official Handbook of the Marvel Universe (2004) #12 (SPIDER-MAN),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/4bc64020a4ccc.jpg",8000,"Tomo de referencia centrado en Spider-Man: poderes aliados enemigos y datos cronológicos del trepamuros."
+26620,The Stand: American Nightmares HC (Hardcover),"http://i.annihil.us/u/prod/marvel/i/mg/9/00/4bb4c3523c46f.jpg",5000,"Novela gráfica basada en Stephen King: sobrevivientes y pesadillas en un mundo post-apocalíptico en formato tapa dura."
+291,Ant-Man (2003) #1,"http://i.annihil.us/u/prod/marvel/i/mg/6/e0/4bc6a2497684e.jpg",6000,"Primer número de la miniserie Ant-Man: Scott Lang tamaño reducido y problemas a escala humana."
+2088,Official Handbook of the Marvel Universe (2004) #14 (FANTASTIC FOUR),"http://i.annihil.us/u/prod/marvel/i/mg/9/90/4bc6353e5fc56.jpg",7000,"Enciclopedia oficial dedicada a la Familia Fantástica: Cuatro Fantásticos tecnología y rivales clásicos."
+1590,Official Handbook of the Marvel Universe (2004) #9 (THE WOMEN OF MARVEL),"http://i.annihil.us/u/prod/marvel/i/mg/9/b0/4c7d666c0e58a.jpg",8000,"Volumen especial sobre heroínas y figuras femeninas icónicas del universo Marvel con fichas ilustradas."
+15878,Hedge Knight II: Sworn Sword (2007) #1 (Yu Variant),"http://i.annihil.us/u/prod/marvel/i/mg/9/50/4bc49463dad62.jpg",20000,"Fantasía medieval en el mundo de George R. R. Martin: caballeros errantes y honor con portada variante de Yu."
+1749,Official Handbook of the Marvel Universe (2004) #11 (X-MEN - AGE OF APOCALYPSE),"http://i.annihil.us/u/prod/marvel/i/mg/c/b0/4bc6494ed6eb4.jpg",5000,"Referencia de la era Age of Apocalypse: mutantes líneas alternativas y eventos clave de la saga X."
+1994,Official Handbook of the Marvel Universe (2004) #13 (TEAMS),"http://i.annihil.us/u/prod/marvel/i/mg/f/20/4bc63a47b8dcb.jpg",9000,"Edición centrada en equipos superheroicos: Vengadores Defensores y alianzas legendarias del MU."
+1158,ULTIMATE X-MEN VOL. 5: ULTIMATE WAR TPB (Trade Paperback),"http://i.annihil.us/u/prod/marvel/i/mg/2/f0/4bc6670c80007.jpg",12000,"Tomo rústico Ultimate X-Men: conflicto Ultimate War entre mutantes y el gobierno en la línea Ultimate."
+428,Ant-Man (2003) #4,"http://i.annihil.us/u/prod/marvel/i/mg/4/20/4bc697c680890.jpg",11000,"Cuarto capítulo de la serie Ant-Man: combates diminutos y humor en la tradición Marvel."
+331,Gun Theory (2003) #4,"http://i.annihil.us/u/prod/marvel/i/mg/c/60/4bc69f11baf75.jpg",6000,"Thriller urbano número cuatro: violencia moralidad y tensión en cada viñeta."
+15094,Silver Surfer (1987),"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",9000,"Clásico del Surfista de Plata: viajes cósmicos y el poder cósmico en la tradición de los años ochenta."
+376,Ant-Man (2003) #3,"http://i.annihil.us/u/prod/marvel/i/mg/d/70/4bc69c7e9b9d7.jpg",666,"Tercer episodio de Ant-Man: escapadas ingeniosas y enemigos que no miran el tamaño."
+323,Ant-Man (2003) #2,"http://i.annihil.us/u/prod/marvel/i/mg/f/20/4bc69f33cafc0.jpg",1000,"Segundo número: Scott Lang afina trajes y ego mientras crece la amenaza."
+183,Startling Stories: The Incorrigible Hulk (2004) #1,"http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg",2000,"Historia autoconclusiva del Hulk incorregible: humor oscuro y caos verde en un solo tomo."

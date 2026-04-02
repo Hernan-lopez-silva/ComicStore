@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Página no encontrada — Comic Store{% endblock %}
+{% block css %}
+{# Mismo layout que el inicio: banner y botón Superman usan .banner y .superman-icon definidos ahí #}
+<link rel="stylesheet" href="{% static 'css/styleIndex.css' %}">
+<link rel="stylesheet" href="{% static 'css/styleError404.css' %}">
+{% endblock %}
+{% block content %}
+<section class="error-404-wrap">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7 text-center">
+                <div class="card error-404-card bg-white p-4 p-md-5">
+                    <div class="mb-3">
+                        <i class="fas fa-mask error-404-icon" aria-hidden="true"></i>
+                    </div>
+                    <p class="error-404-code mb-2">404</p>
+                    <h1 class="error-404-title mb-3">Esta página no existe en el multiverso</h1>
+                    <p class="error-404-lead mb-4">
+                        La ruta que buscás no está en nuestro catálogo. Puede que el enlace esté roto o que hayas escrito mal la dirección.
+                    </p>
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center error-404-actions">
+                        <a href="{% url 'landing:index' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-house me-2"></i>Volver al inicio
+                        </a>
+                        <a href="{% url 'landing:index' %}#comics" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-book-open me-2"></i>Ver productos
+                        </a>
+                        <a href="{% url 'contacto' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-envelope me-2"></i>Contacto
+                        </a>
+                    </div>
+                </div>
+                <p class="text-muted small mt-4 mb-0">
+                    Si creés que es un error del sitio, escribinos desde contacto.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block js %}
+<script>
+(function () {
+    var icon = document.getElementById('scroll-top-icon');
+    if (!icon) return;
+    icon.style.display = 'none';
+    window.addEventListener('scroll', function () {
+        icon.style.display = window.scrollY > 30 ? 'block' : 'none';
+    });
+})();
+</script>
+{% endblock %}

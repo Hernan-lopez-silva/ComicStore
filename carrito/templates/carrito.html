@@ -32,77 +32,12 @@
                         </tfoot>
                     </table>
                 </div> 
-                <button id="btnPago" type="button" class="btn btn-primary" onclick="location.href='#'">Finalizar Compra</button>
-            </div>
-        </div>
-
-        <div class="modal" id="modalPago">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Finalizar Compra</h5>
-                    <button type="button" class="btn-close btnClose" aria-label="Close">
-                        <span aria-hidden="true"></span>
-                    </button>
-                </div>
-                <div class="modal-body mt-3">
-                    <p>Redirigiendo a la plataforma de pagos</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btnClose" data-bs-dismiss="modal">Continuar</button>
-                </div>
+                <a href="{% url 'checkout' %}" id="btnCheckout" class="btn btn-primary btn-lg">Proceder al Pago</a>
             </div>
         </div>
     </div>
-        <!-- <div class="col-12 col-md-6 d-none d-md-block">
-            <h3>Resumen de la compra</h3>
-        </div> -->
-    </div>
-    <div class="row mx-auto mb-5">
-        <!-- <div class="col-12 col-md-6 mt-5">
-            <div class="card mx-auto rounded-4 h-100 w-75" >
-                <div class="text-center my-3">
-                    <img class="imagen img-fluid" src="{% static 'img/clean (1).jpg' %}" alt="">
-                </div>
-                <div class="mx-auto px-5">
-                    <h3>MARVEL: COLECCION DEFINITIVA</h3>
-                    <p class="mt-3">EDITORIAL: PLANETA</p>
-                    <p><strong>$124.000</strong></p>
-                </div>
-                <div class="contador my-3 px-3">
-                    <div class="col-6 d-inline">
-                        <div class="input-group">
-                            <button class="btn btn-outline-secondary" type="button" id="btnMenos">-</button>
 
-                            <input type="text" class="form-control text-center" id="cantidadInput" value="1"
-                                pattern="[0-9]*" inputmode="numeric">
-
-                            <button class="btn btn-outline-secondary" type="button" id="btnMas">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <!-- <div class="col-12 col-md-6 mt-5">
-            <div class="card mx-auto p-3 rounded-4 h-100 w-75">
-                <div class="card-title">
-                    <h3 id="totalProductos" class="text-center mb-3">Productos (1)</h3>
-                </div>
-                <div class="card-body p-5">
-                    <p class="mt-3">Total Productos: $124.000</p>
-                    <p>Total Envío: $5.000</p>
-                    <p>Total: $129.000</p>
-                </div>
-                <div class="card-footer">
-                    <div class="text-center mt-3">
-                        <button type="button" class="btn btn-primary"
-                            onclick="location.href='./index.html#galeria'">Pagar</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-    </div>
-    {% endblock %}
+{% endblock %}
     {% block js %}
     <script src="{% static 'js/scriptCarro.js' %}"></script>
     {% endblock %}
