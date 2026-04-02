@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
@@ -242,26 +243,30 @@ def payment_failed(request, order_id):
 
 
 def order_detail(request, order_id):
-    """Vista de detalle de una orden"""
-    order = get_object_or_404(Order, order_id=order_id)
-    
-    # Verificar que el usuario tenga permiso para ver esta orden
-    if request.user.is_authenticated:
-        if order.user and order.user != request.user and not request.user.is_staff:
-            return redirect('home')
-    
-    context = {
-        'order': order,
-    }
+    """Detalle de orden: dueño, staff, o comprobante por enlace (compra invitado sin user)."""
+    order = get_object_or_404(
+        Order.objects.select_related('payment_gateway').prefetch_related('items'),
+        order_id=order_id,
+    )
+    if request.user.is_staff:
+        pass
+    elif order.user_id:
+        if not request.user.is_authenticated:
+            login_url = reverse('login')
+            return redirect(f'{login_url}?next={request.get_full_path()}')
+        if order.user_id != request.user.id:
+            raise Http404()
+    context = {'order': order}
     return render(request, 'order_detail.html', context)
 
 
 @login_required
 def my_orders(request):
-    """Vista de órdenes del usuario autenticado"""
-    orders = Order.objects.filter(user=request.user).prefetch_related('items')
-    
-    context = {
-        'orders': orders,
-    }
-    return render(request, 'my_orders.html', context)
+    """Historial de compras del usuario con ítems para el listado."""
+    orders = (
+        Order.objects.filter(user=request.user)
+        .select_related('payment_gateway')
+        .prefetch_related('items')
+        .order_by('-created_at')
+    )
+    return render(request, 'my_orders.html', {'orders': orders})

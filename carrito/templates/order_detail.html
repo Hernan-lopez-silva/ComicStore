@@ -8,9 +8,15 @@
     <div class="row">
         <div class="col-12">
             <div class="mb-4">
+                {% if user.is_authenticated %}
                 <a href="{% url 'my_orders' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver a Mis Órdenes
+                    <i class="fas fa-arrow-left"></i> Volver a mis compras
                 </a>
+                {% else %}
+                <a href="{% url 'landing:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al inicio
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -46,7 +52,7 @@
                                 <span class="badge bg-secondary">{{ order.payment_status }}</span>
                                 {% endif %}
                             </p>
-                            <p class="mb-1"><strong>Método de pago:</strong> {{ order.payment_gateway.display_name }}</p>
+                            <p class="mb-1"><strong>Método de pago:</strong> {% if order.payment_gateway %}{{ order.payment_gateway.display_name }}{% else %}—{% endif %}</p>
                             {% if order.transaction_id %}
                             <p class="mb-1"><small class="text-muted">ID: {{ order.transaction_id }}</small></p>
                             {% endif %}
