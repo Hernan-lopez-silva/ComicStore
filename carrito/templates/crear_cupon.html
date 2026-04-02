@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'css/crear.css' %}">{% endblock %}
+{% block title %}Comicstore - {{ titulo }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">{{ titulo }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary float-end mt-3" type="submit">Guardar</button>
+    </form>
+    <a href="{% url 'listar_cupones' %}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

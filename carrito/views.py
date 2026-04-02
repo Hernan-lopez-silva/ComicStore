@@ -146,6 +146,66 @@ def create_order(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+def superuser_required(view_func):
+    from django.contrib.auth.decorators import user_passes_test
+    return user_passes_test(
+        lambda u: u.is_authenticated and u.is_superuser,
+        login_url='landing:index',
+    )(view_func)
+
+
+@superuser_required
+def listar_cupones(request):
+    cupones = Coupon.objects.all().order_by('-id')
+    return render(request, 'cupones.html', {'cupones': cupones})
+
+
+@superuser_required
+def crear_cupon(request):
+    from django import forms as django_forms
+
+    class CouponForm(django_forms.ModelForm):
+        class Meta:
+            model = Coupon
+            fields = ['code', 'discount_type', 'discount_value', 'is_active', 'max_uses']
+
+    if request.method == 'POST':
+        form = CouponForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_cupones')
+    else:
+        form = CouponForm()
+    return render(request, 'crear_cupon.html', {'form': form, 'titulo': 'Crear Cupón'})
+
+
+@superuser_required
+def editar_cupon(request, id):
+    from django import forms as django_forms
+
+    class CouponForm(django_forms.ModelForm):
+        class Meta:
+            model = Coupon
+            fields = ['code', 'discount_type', 'discount_value', 'is_active', 'max_uses']
+
+    cupon = get_object_or_404(Coupon, id=id)
+    if request.method == 'POST':
+        form = CouponForm(request.POST, instance=cupon)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_cupones')
+    else:
+        form = CouponForm(instance=cupon)
+    return render(request, 'crear_cupon.html', {'form': form, 'titulo': 'Editar Cupón'})
+
+
+@superuser_required
+def eliminar_cupon(request, id):
+    cupon = get_object_or_404(Coupon, id=id)
+    cupon.delete()
+    return redirect('listar_cupones')
+
+
 @require_http_methods(["POST"])
 def validate_coupon(request):
     """Validar un cupón y devolver el descuento calculado"""
@@ -167,7 +227,7 @@ def validate_coupon(request):
 
         if coupon.discount_type == 'percentage':
             discount = subtotal * (coupon.discount_value / 100)
-            label = f'{coupon.discount_value}% de descuento'
+            label = f'{float(coupon.discount_value):g}% de descuento'
         else:
             discount = min(coupon.discount_value, subtotal)
             label = f'Descuento de ${coupon.discount_value:,.0f}'
