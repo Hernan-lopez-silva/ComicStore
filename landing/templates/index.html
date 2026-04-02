@@ -27,7 +27,11 @@
     </button>
 </div>
 <div class="galeria container-fluid pt-5 pb-2 text-center">
+    {% if query %}
+    <p class="titulo">Resultados para: "{{ query }}"</p>
+    {% else %}
     <p class="titulo">¡Recién llegados!</p>
+    {% endif %}
     <div id="comics" class="row">
     {% if comics %}
         {% for comic in comics %}
@@ -93,7 +97,11 @@
       
     
     {% else %}
+        {% if query %}
+        <p>No se encontraron resultados para "{{ query }}".</p>
+        {% else %}
         <p>No hay comics disponibles.</p>
+        {% endif %}
     {% endif %}
 {% endblock %}
 {% block js %}

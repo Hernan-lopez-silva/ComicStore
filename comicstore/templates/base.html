@@ -45,6 +45,10 @@
                     <a class="nav-link" href="{% url 'contacto' %}">CONTACTO</a>
                 </li>
             </ul>
+            <form class="d-flex me-3" method="get" action="{% url 'landing:index' %}#comics">
+                <input class="form-control me-2" type="search" name="q" placeholder="Buscar cómics..." aria-label="Buscar" value="{{ request.GET.q|default:'' }}">
+                <button class="btn btn-outline-light" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
             <div class="nav-item">
                 <a href="{% url 'carrito' %}"><i class="text-end fa-solid fa-cart-shopping fa-3x"></i></a>
             </div>
