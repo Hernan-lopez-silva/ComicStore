@@ -120,10 +120,26 @@
                     </div>
                     
                     <hr>
-                    
+
+                    <!-- Cupón de descuento -->
+                    <div class="mb-3">
+                        <div id="couponMessage" class="alert py-2 d-none mb-2" role="alert"></div>
+                        <label for="couponInput" class="form-label fw-semibold">Cupón de descuento</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control text-uppercase" id="couponInput" placeholder="Ej: COMICSTORE1" maxlength="50">
+                            <button class="btn btn-outline-secondary" type="button" id="btnApplyCoupon">Aplicar</button>
+                        </div>
+                    </div>
+
+                    <hr>
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal:</span>
                         <span id="summarySubtotal">$0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-success d-none" id="discountRow">
+                        <span id="discountLabel">Descuento:</span>
+                        <span id="summaryDiscount">-$0</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Envío:</span>

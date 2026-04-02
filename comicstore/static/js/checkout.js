@@ -1,14 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     const checkoutForm = document.getElementById('checkoutForm');
     const btnProcessOrder = document.getElementById('btnProcessOrder');
-    const processingModal = new bootstrap.Modal(document.getElementById('processingModal'));
-    
+    let processingModal = null;
+
+    // Estado del cupón
+    let appliedCoupon = null; // { code, discount }
+
     // Cargar resumen del carrito
     loadCartSummary();
-    
+
     // Calcular comisión al cambiar pasarela
     document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
         radio.addEventListener('change', updatePaymentFee);
+    });
+
+    // Cupón
+    document.getElementById('btnApplyCoupon').addEventListener('click', applyCoupon);
+    document.getElementById('couponInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); }
     });
     
     // Procesar orden
@@ -73,25 +82,78 @@ document.addEventListener('DOMContentLoaded', function() {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const shippingCost = 5000;
+        const discount = appliedCoupon ? appliedCoupon.discount : 0;
         const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked');
-        
+
         if (!selectedGateway) return;
-        
+
         // Obtener el porcentaje de comisión del texto
         const gatewayCard = selectedGateway.closest('.form-check');
         const feeText = gatewayCard.querySelector('.badge');
         let feePercentage = 0;
-        
+
         if (feeText) {
             const match = feeText.textContent.match(/\d+\.?\d*/);
             feePercentage = match ? parseFloat(match[0]) : 0;
         }
-        
-        const fee = (subtotal + shippingCost) * (feePercentage / 100);
-        const total = subtotal + shippingCost + fee;
-        
+
+        const discountedSubtotal = subtotal - discount;
+        const fee = (discountedSubtotal + shippingCost) * (feePercentage / 100);
+        const total = discountedSubtotal + shippingCost + fee;
+
         document.getElementById('summaryFee').textContent = `$${Math.round(fee).toLocaleString('es-CL')}`;
         document.getElementById('summaryTotal').textContent = `$${Math.round(total).toLocaleString('es-CL')}`;
+    }
+
+    async function applyCoupon() {
+        const code = document.getElementById('couponInput').value.trim().toUpperCase();
+        const messageEl = document.getElementById('couponMessage');
+        const btn = document.getElementById('btnApplyCoupon');
+
+        if (!code) {
+            showCouponMessage(messageEl, 'Ingresa un código de cupón.', 'danger');
+            return;
+        }
+
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        btn.disabled = true;
+        btn.textContent = '...';
+
+        try {
+            const response = await fetch('/carrito/validate-coupon/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                body: JSON.stringify({ code, subtotal })
+            });
+            const data = await response.json();
+
+            if (data.valid) {
+                appliedCoupon = { code, discount: data.discount };
+                showCouponMessage(messageEl, data.message, 'success');
+
+                const discountRow = document.getElementById('discountRow');
+                discountRow.classList.remove('d-none');
+                document.getElementById('discountLabel').textContent = data.label + ':';
+                document.getElementById('summaryDiscount').textContent = `-$${Math.round(data.discount).toLocaleString('es-CL')}`;
+
+                btn.textContent = 'Aplicado ✓';
+                btn.classList.replace('btn-outline-secondary', 'btn-success');
+                document.getElementById('couponInput').disabled = true;
+            } else {
+                appliedCoupon = null;
+                showCouponMessage(messageEl, data.message, 'danger');
+                btn.disabled = false;
+                btn.textContent = 'Aplicar';
+            }
+        } catch (e) {
+            showCouponMessage(messageEl, 'Error al validar el cupón.', 'danger');
+            btn.disabled = false;
+            btn.textContent = 'Aplicar';
+        }
+
+        updatePaymentFee();
     }
     
     async function createOrder() {
@@ -117,6 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked').value;
         
         // Mostrar modal de procesamiento
+        if (!processingModal) {
+            processingModal = new bootstrap.Modal(document.getElementById('processingModal'));
+        }
         processingModal.show();
         btnProcessOrder.disabled = true;
         
@@ -138,7 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     cart_items: cart,
                     shipping_info: shippingInfo,
-                    payment_gateway: selectedGateway
+                    payment_gateway: selectedGateway,
+                    coupon_code: appliedCoupon ? appliedCoupon.code : ''
                 })
             });
             
@@ -164,6 +230,12 @@ document.addEventListener('DOMContentLoaded', function() {
             btnProcessOrder.disabled = false;
             alert('Error al procesar la orden: ' + error.message);
         }
+    }
+
+    function showCouponMessage(el, message, type) {
+        el.className = `alert alert-${type} mt-2 py-2`;
+        el.textContent = message;
+        el.classList.remove('d-none');
     }
 
     function getCsrfToken() {

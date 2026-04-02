@@ -56,6 +56,11 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     transaction_id = models.CharField(max_length=200, blank=True)
     
+    # Cupón
+    coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+    coupon_code = models.CharField(max_length=50, blank=True)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
     # Montos
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=5000.00)
@@ -101,6 +106,35 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = "Item de Orden"
         verbose_name_plural = "Items de Orden"
+
+
+class Coupon(models.Model):
+    """Modelo para cupones de descuento"""
+    DISCOUNT_TYPE_CHOICES = [
+        ('percentage', 'Porcentaje'),
+        ('fixed', 'Monto fijo'),
+    ]
+
+    code = models.CharField(max_length=50, unique=True)
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE_CHOICES, default='percentage')
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+    max_uses = models.PositiveIntegerField(null=True, blank=True, help_text="Dejar vacío para usos ilimitados")
+    times_used = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.code
+
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.max_uses is not None and self.times_used >= self.max_uses:
+            return False
+        return True
+
+    class Meta:
+        verbose_name = "Cupón"
+        verbose_name_plural = "Cupones"
 
 
 class PaymentSimulation(models.Model):

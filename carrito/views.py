@@ -11,7 +11,7 @@ import random
 import string
 from decimal import Decimal
 
-from .models import Order, OrderItem, PaymentGateway, PaymentSimulation
+from .models import Order, OrderItem, PaymentGateway, PaymentSimulation, Coupon
 from crud.models import Comic
 
 
@@ -76,9 +76,28 @@ def create_order(request):
                 return JsonResponse({'error': f'Comic con ID {item["id"]} no encontrado'}, status=400)
         
         shipping_cost = Decimal('5000.00')
-        payment_fee = (subtotal + shipping_cost) * (payment_gateway.processing_fee / 100)
-        total = subtotal + shipping_cost + payment_fee
-        
+
+        # Aplicar cupón si fue enviado
+        coupon_code = data.get('coupon_code', '').strip().upper()
+        coupon_obj = None
+        discount = Decimal('0.00')
+
+        if coupon_code:
+            try:
+                coupon_obj = Coupon.objects.get(code=coupon_code)
+                if coupon_obj.is_valid():
+                    if coupon_obj.discount_type == 'percentage':
+                        discount = subtotal * (coupon_obj.discount_value / 100)
+                    else:
+                        discount = min(coupon_obj.discount_value, subtotal)
+                else:
+                    return JsonResponse({'error': 'El cupón no es válido o está expirado'}, status=400)
+            except Coupon.DoesNotExist:
+                return JsonResponse({'error': 'Cupón no encontrado'}, status=400)
+
+        payment_fee = (subtotal - discount + shipping_cost) * (payment_gateway.processing_fee / 100)
+        total = subtotal - discount + shipping_cost + payment_fee
+
         # Crear la orden con transacción atómica
         with transaction.atomic():
             order = Order.objects.create(
@@ -91,12 +110,18 @@ def create_order(request):
                 shipping_region=shipping_info.get('region'),
                 shipping_postal_code=shipping_info.get('postal_code', ''),
                 payment_gateway=payment_gateway,
+                coupon=coupon_obj,
+                coupon_code=coupon_code,
+                discount=discount,
                 subtotal=subtotal,
                 shipping_cost=shipping_cost,
                 payment_fee=payment_fee,
                 total=total,
                 notes=shipping_info.get('notes', '')
             )
+            if coupon_obj:
+                coupon_obj.times_used += 1
+                coupon_obj.save(update_fields=['times_used'])
             
             # Crear items de la orden
             for item_data in items_to_create:
@@ -119,6 +144,42 @@ def create_order(request):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def validate_coupon(request):
+    """Validar un cupón y devolver el descuento calculado"""
+    try:
+        data = json.loads(request.body)
+        code = data.get('code', '').strip().upper()
+        subtotal = Decimal(str(data.get('subtotal', 0)))
+
+        if not code:
+            return JsonResponse({'valid': False, 'message': 'Ingresa un código de cupón'})
+
+        try:
+            coupon = Coupon.objects.get(code=code)
+        except Coupon.DoesNotExist:
+            return JsonResponse({'valid': False, 'message': 'Cupón no encontrado'})
+
+        if not coupon.is_valid():
+            return JsonResponse({'valid': False, 'message': 'El cupón no es válido o está expirado'})
+
+        if coupon.discount_type == 'percentage':
+            discount = subtotal * (coupon.discount_value / 100)
+            label = f'{coupon.discount_value}% de descuento'
+        else:
+            discount = min(coupon.discount_value, subtotal)
+            label = f'Descuento de ${coupon.discount_value:,.0f}'
+
+        return JsonResponse({
+            'valid': True,
+            'discount': float(discount),
+            'label': label,
+            'message': f'¡Cupón aplicado! {label}',
+        })
+    except Exception as e:
+        return JsonResponse({'valid': False, 'message': str(e)}, status=500)
 
 
 @ensure_csrf_cookie
