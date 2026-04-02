@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
+{% block title %}Comicstore - Checkout{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Finalizar Compra</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario de envío -->
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Información de Envío</h5>
+                </div>
+                <div class="card-body">
+                    <form id="checkoutForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="+56 9 1234 5678">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Dirección *</label>
+                            <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">Ciudad *</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="region" class="form-label">Región *</label>
+                                <select class="form-select" id="region" name="region" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Región Metropolitana">Región Metropolitana</option>
+                                    <option value="Región de Valparaíso">Región de Valparaíso</option>
+                                    <option value="Región del Biobío">Región del Biobío</option>
+                                    <option value="Región de La Araucanía">Región de La Araucanía</option>
+                                    <option value="Región de Los Lagos">Región de Los Lagos</option>
+                                    <option value="Región de Coquimbo">Región de Coquimbo</option>
+                                    <option value="Región de Maule">Región de Maule</option>
+                                    <option value="Región de Antofagasta">Región de Antofagasta</option>
+                                    <option value="Otra">Otra</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="postal_code" class="form-label">Código Postal</label>
+                            <input type="text" class="form-control" id="postal_code" name="postal_code">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas adicionales (opcional)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Ej: Timbre o referencias para encontrar la dirección"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Selección de pasarela de pago -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Método de Pago</h5>
+                </div>
+                <div class="card-body">
+                    <div id="paymentGateways">
+                        {% for gateway in payment_gateways %}
+                        <div class="form-check mb-3 p-3 border rounded">
+                            <input class="form-check-input" type="radio" name="payment_gateway" id="gateway_{{ gateway.id }}" value="{{ gateway.id }}" {% if forloop.first %}checked{% endif %}>
+                            <label class="form-check-label w-100" for="gateway_{{ gateway.id }}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ gateway.display_name }}</strong>
+                                        {% if gateway.description %}
+                                        <p class="mb-0 text-muted small">{{ gateway.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end">
+                                        {% if gateway.processing_fee > 0 %}
+                                        <span class="badge bg-info">+{{ gateway.processing_fee }}% comisión</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de la orden -->
+        <div class="col-lg-5">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Resumen del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div id="orderSummary">
+                        <p class="text-center text-muted">Cargando...</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="summarySubtotal">$0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Envío:</span>
+                        <span id="summaryShipping">${{ shipping_cost }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Comisión de pago:</span>
+                        <span id="summaryFee">$0</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="summaryTotal" class="text-primary">$0</strong>
+                    </div>
+                    
+                    <button type="button" id="btnProcessOrder" class="btn btn-primary w-100 btn-lg">
+                        Proceder al Pago
+                    </button>
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-lock"></i> Pago seguro y encriptado
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de procesamiento -->
+<div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <h5>Procesando tu orden...</h5>
+                <p class="text-muted">Por favor espera un momento</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

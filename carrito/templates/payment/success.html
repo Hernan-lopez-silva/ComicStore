@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
+{% block title %}Pago Exitoso{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-body text-center p-5">
+                    <!-- Icono de éxito -->
+                    <div class="mb-4">
+                        <div class="success-checkmark">
+                            <div class="check-icon">
+                                <span class="icon-line line-tip"></span>
+                                <span class="icon-line line-long"></span>
+                                <div class="icon-circle"></div>
+                                <div class="icon-fix"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-success mb-3">¡Pago Exitoso!</h1>
+                    <p class="lead mb-4">Tu compra se ha procesado correctamente</p>
+
+                    <!-- Detalles de la transacción -->
+                    <div class="alert alert-success">
+                        <div class="row text-start">
+                            <div class="col-md-6 mb-2">
+                                <strong>Orden:</strong> #{{ order.order_id }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Total:</strong> ${{ order.total|floatformat:0 }}
+                            </div>
+                            {% if simulation %}
+                            <div class="col-md-6 mb-2">
+                                <strong>ID Transacción:</strong> {{ order.transaction_id }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Código Autorización:</strong> {{ simulation.authorization_code }}
+                            </div>
+                            {% endif %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Método de pago:</strong> {{ order.payment_gateway.display_name }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Fecha:</strong> {{ order.completed_at|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de entrega -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-shipping-fast"></i> Información de Envío</h5>
+                        </div>
+                        <div class="card-body text-start">
+                            <p class="mb-1"><strong>Destinatario:</strong> {{ order.shipping_name }}</p>
+                            <p class="mb-1"><strong>Dirección:</strong> {{ order.shipping_address }}</p>
+                            <p class="mb-1"><strong>Ciudad:</strong> {{ order.shipping_city }}, {{ order.shipping_region }}</p>
+                            <p class="mb-0"><strong>Email:</strong> {{ order.email }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Productos comprados -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Productos Comprados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Precio</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items.all %}
+                                        <tr>
+                                            <td>{{ item.comic_title }}</td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">${{ item.unit_price|floatformat:0 }}</td>
+                                            <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                            <td class="text-end">${{ order.subtotal|floatformat:0 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Envío:</strong></td>
+                                            <td class="text-end">${{ order.shipping_cost|floatformat:0 }}</td>
+                                        </tr>
+                                        {% if order.payment_fee > 0 %}
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Comisión:</strong></td>
+                                            <td class="text-end">${{ order.payment_fee|floatformat:2 }}</td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr class="table-success">
+                                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                            <td class="text-end"><strong>${{ order.total|floatformat:0 }}</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>¿Qué sigue?</strong>
+                        <p class="mb-0 mt-2">
+                            Hemos enviado un correo de confirmación a <strong>{{ order.email }}</strong> con todos los detalles de tu compra.
+                            Tu pedido será procesado en un plazo de 24-48 horas hábiles.
+                        </p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <a href="{% url 'order_detail' order.order_id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-file-invoice"></i> Ver Detalle de Orden
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                    </div>
+
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> 
+                            Esta es una compra simulada. No se ha realizado ningún cargo real.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-checkmark {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+.success-checkmark .check-icon {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    border-radius: 50%;
+    box-sizing: content-box;
+    border: 4px solid #4CAF50;
+}
+.success-checkmark .check-icon::before {
+    top: 3px;
+    left: -2px;
+    width: 30px;
+    transform-origin: 100% 50%;
+    border-radius: 100px 0 0 100px;
+}
+.success-checkmark .check-icon::after {
+    top: 0;
+    left: 30px;
+    width: 60px;
+    transform-origin: 0 50%;
+    border-radius: 0 100px 100px 0;
+    animation: rotate-circle 4.25s ease-in;
+}
+.success-checkmark .check-icon::before, .success-checkmark .check-icon::after {
+    content: '';
+    height: 100px;
+    position: absolute;
+    background: #FFFFFF;
+    transform: rotate(-45deg);
+}
+.success-checkmark .check-icon .icon-line {
+    height: 5px;
+    background-color: #4CAF50;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 10;
+}
+.success-checkmark .check-icon .icon-line.line-tip {
+    top: 46px;
+    left: 14px;
+    width: 25px;
+    transform: rotate(45deg);
+    animation: icon-line-tip 0.75s;
+}
+.success-checkmark .check-icon .icon-line.line-long {
+    top: 38px;
+    right: 8px;
+    width: 47px;
+    transform: rotate(-45deg);
+    animation: icon-line-long 0.75s;
+}
+.success-checkmark .check-icon .icon-circle {
+    top: -4px;
+    left: -4px;
+    z-index: 10;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    box-sizing: content-box;
+    border: 4px solid rgba(76, 175, 80, .5);
+}
+.success-checkmark .check-icon .icon-fix {
+    top: 8px;
+    width: 5px;
+    left: 26px;
+    z-index: 1;
+    height: 85px;
+    position: absolute;
+    transform: rotate(-45deg);
+    background-color: #FFFFFF;
+}
+
+@keyframes rotate-circle {
+    0% {
+        transform: rotate(-45deg);
+    }
+    5% {
+        transform: rotate(-45deg);
+    }
+    12% {
+        transform: rotate(-405deg);
+    }
+    100% {
+        transform: rotate(-405deg);
+    }
+}
+@keyframes icon-line-tip {
+    0% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+    54% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+    70% {
+        width: 50px;
+        left: -8px;
+        top: 37px;
+    }
+    84% {
+        width: 17px;
+        left: 21px;
+        top: 48px;
+    }
+    100% {
+        width: 25px;
+        left: 14px;
+        top: 46px;
+    }
+}
+@keyframes icon-line-long {
+    0% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+    65% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+    84% {
+        width: 55px;
+        right: 0px;
+        top: 35px;
+    }
+    100% {
+        width: 47px;
+        right: 8px;
+        top: 38px;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block js %}
+<script>
+// Limpiar el carrito después de una compra exitosa
+localStorage.removeItem('cart');
+</script>
+{% endblock %}

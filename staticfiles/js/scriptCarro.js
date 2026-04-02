@@ -4,17 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     showCart();
 
-    document.getElementById('btnPago').addEventListener('click', function () {
-        showModal();
-        //localStorage.removeItem('cart');
-        //this.location.reload();
-    });
-
-    document.querySelectorAll('.btnClose').forEach(element =>{
-        element.addEventListener('click', function () {
-            hideModal(element);
-        });
-    });
+    // Verificar si hay items en el carrito para habilitar/deshabilitar el botón
+    const btnCheckout = document.getElementById('btnCheckout');
+    if (btnCheckout && (!listaCarrito || listaCarrito.length === 0)) {
+        btnCheckout.classList.add('disabled');
+        btnCheckout.style.pointerEvents = 'none';
+    }
     
     document.addEventListener('click', function (e) {
         if (e.target && e.target.matches('.fa-trash-can')) {
@@ -72,24 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     
             totalCarrito.innerHTML = `$${total}`      ;
-        }
-    };
-
-    function showModal() {
-        const modal = document.getElementById('modalPago');
-        modal.classList.add('show');
-        modal.style.display = 'block';
-        document.body.classList.add('modal-open');
-        document.body.style.paddingRight = '17px'; // Ajuste para el scrollbar
-    };
-
-    function hideModal(button) {
-        const modal = button.closest('.modal'); // Encuentra el modal más cercano
-        if (modal) {
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            document.body.style.paddingRight = '0'; // Restablecer ajuste del scrollbar
         }
     };
 

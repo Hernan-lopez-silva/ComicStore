@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">
+<style>
+    .stripe-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .stripe-header {
+        background: linear-gradient(135deg, #635bff 0%, #4f46ba 100%);
+        color: white;
+        padding: 30px;
+        text-center;
+        border-radius: 10px 10px 0 0;
+    }
+    .stripe-logo {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+    }
+    .stripe-element {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        background: #f8f9fa;
+        transition: all 0.3s;
+    }
+    .stripe-element:focus-within {
+        border-color: #635bff;
+        box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+        background: white;
+    }
+    .payment-icons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .payment-icon {
+        width: 50px;
+        height: 35px;
+        background: #f5f5f5;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+{% block title %}Stripe - Pago Seguro{% endblock %}
+{% block content %}
+
+<div class="d-none" aria-hidden="true">{% csrf_token %}</div>
+<div class="container py-5">
+    <div class="stripe-container">
+        <div class="card shadow-lg">
+            <div class="stripe-header">
+                <div class="stripe-logo">Stripe</div>
+                <p class="mb-0">Pagos seguros procesados por Stripe</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Información de la orden -->
+                <div class="alert alert-info">
+                    <h6 class="mb-2"><strong>Orden #{{ order.order_id }}</strong></h6>
+                    <p class="mb-1">Comercio: Comic Store</p>
+                    <p class="mb-0"><strong>Total a pagar: ${{ order.total|floatformat:0 }} CLP</strong></p>
+                </div>
+
+                <!-- Formulario de Stripe -->
+                <form id="stripePaymentForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" 
+                               placeholder="tu-email@ejemplo.com" required>
+                        <small class="text-muted">Recibirás el recibo de compra en este correo</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="card_number" class="form-label">Información de la tarjeta</label>
+                        <div class="stripe-element mb-2">
+                            <input type="text" class="form-control border-0 bg-transparent" 
+                                   id="card_number" maxlength="19" 
+                                   placeholder="1234 1234 1234 1234" required>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="stripe-element">
+                                    <input type="text" class="form-control border-0 bg-transparent" 
+                                           id="expiry" maxlength="5" placeholder="MM / AA" required>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stripe-element">
+                                    <input type="text" class="form-control border-0 bg-transparent" 
+                                           id="cvc" maxlength="4" placeholder="CVC" required>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            💳 Tarjeta de prueba: 4242 4242 4242 4242 | Cualquier fecha futura | Cualquier CVC
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="card_holder" class="form-label">Nombre del titular</label>
+                        <input type="text" class="form-control" id="card_holder" 
+                               placeholder="Nombre como aparece en la tarjeta" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="country" class="form-label">País o región</label>
+                        <select class="form-select" id="country" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="CL" selected>Chile</option>
+                            <option value="AR">Argentina</option>
+                            <option value="BR">Brasil</option>
+                            <option value="US">Estados Unidos</option>
+                            <option value="ES">España</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="postal_code" class="form-label">Código postal</label>
+                        <input type="text" class="form-control" id="postal_code" 
+                               placeholder="12345" required>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="save_card">
+                        <label class="form-check-label" for="save_card">
+                            Guardar esta tarjeta de forma segura para futuras compras
+                        </label>
+                    </div>
+
+                    <!-- Iconos de métodos de pago aceptados -->
+                    <div class="payment-icons mb-3">
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #1434cb, #2d57d9);">
+                            <span style="color: white; font-weight: bold;">VISA</span>
+                        </div>
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #eb001b, #f79e1b);">
+                            <span style="color: white; font-size: 10px;">MC</span>
+                        </div>
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #006fcf, #00d4ff);">
+                            <span style="color: white; font-size: 10px;">AMEX</span>
+                        </div>
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #ff6600, #ff9900);">
+                            <span style="color: white; font-size: 10px;">DISC</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" 
+                                style="background: #635bff; border-color: #635bff;">
+                            <i class="fas fa-lock"></i> Pagar ${{ order.total|floatformat:0 }}
+                        </button>
+                        <a href="{% url 'carrito' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted d-block mb-2">
+                        <i class="fas fa-shield-alt"></i> 
+                        Transacciones seguras con cifrado SSL
+                    </small>
+                    <small class="text-muted">
+                        Esta es una simulación de pago. No se realizará ningún cargo real.
+                    </small>
+                </div>
+
+                <!-- Mensaje de seguridad -->
+                <div class="alert alert-light mt-3 border">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lock fa-2x text-success"></i>
+                        </div>
+                        <div>
+                            <strong>Tu pago está protegido</strong>
+                            <p class="mb-0 small text-muted">
+                                Stripe protege tus datos de pago con cifrado de nivel bancario. 
+                                Nunca compartimos tu información de tarjeta con Comic Store.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('stripePaymentForm');
+    const cardNumber = document.getElementById('card_number');
+    const expiry = document.getElementById('expiry');
+    const cvc = document.getElementById('cvc');
+    
+    // Formatear número de tarjeta
+    cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+        
+        // Detectar tipo de tarjeta
+        if (value.startsWith('4')) {
+            // Visa
+            e.target.style.background = 'linear-gradient(to right, #f8f9fa, #e3f2fd)';
+        } else if (value.startsWith('5')) {
+            // Mastercard
+            e.target.style.background = 'linear-gradient(to right, #f8f9fa, #fff3e0)';
+        } else if (value.startsWith('3')) {
+            // Amex
+            e.target.style.background = 'linear-gradient(to right, #f8f9fa, #e1f5fe)';
+        } else {
+            e.target.style.background = '';
+        }
+    });
+    
+    // Formatear fecha de expiración
+    expiry.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + ' / ' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+    
+    // Validar CVC
+    cvc.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+    
+    // Enviar formulario
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando con Stripe...';
+        
+        // Simular verificación de Stripe (3D Secure)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        try {
+            const response = await fetch('{% url "simulate_payment" order.order_id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    email: document.getElementById('email').value,
+                    card_number: cardNumber.value,
+                    expiry: expiry.value,
+                    cvc: cvc.value,
+                    card_holder: document.getElementById('card_holder').value,
+                    country: document.getElementById('country').value,
+                    postal_code: document.getElementById('postal_code').value,
+                    save_card: document.getElementById('save_card').checked
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = '{% url "payment_success" order.order_id %}';
+            } else {
+                window.location.href = '{% url "payment_failed" order.order_id %}';
+            }
+        } catch (error) {
+            alert('Error al procesar el pago: ' + error.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock"></i> Pagar ${{ order.total|floatformat:0 }}';
+        }
+    });
+});
+</script>
+{% endblock %}
