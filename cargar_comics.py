@@ -13,11 +13,12 @@ with open(archivo_csv, newline='', encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         comic, created = Comic.objects.update_or_create(
-            id=row['id'],  
+            id=row['id'],
             defaults={
-                'title': row['title'], 
-                'price': row['price'],  
-                'img_path': row['img_path']  
+                'title': row['title'],
+                'description': row.get('description', '').strip(),
+                'price': row['price'],
+                'img_path': row['img_path'],
             }
         )
         if created:
