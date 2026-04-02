@@ -1,0 +1,48 @@
+/* Página 404 — alineada con Bootswatch Lux y el resto del sitio */
+
+.error-404-wrap {
+    min-height: 55vh;
+    padding: 3rem 1rem 4rem;
+    background: linear-gradient(180deg, rgb(231, 231, 231) 0%, #f8f9fa 100%);
+}
+
+.error-404-code {
+    font-size: clamp(4.5rem, 12vw, 7rem);
+    font-weight: 700;
+    line-height: 1;
+    color: #1a1a1a;
+    letter-spacing: -0.04em;
+    text-shadow: 2px 2px 0 rgba(13, 110, 253, 0.15);
+}
+
+.error-404-title {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 500;
+    color: #343a40;
+}
+
+.error-404-lead {
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.error-404-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+    border-top: 4px solid #0d6efd;
+}
+
+.error-404-icon {
+    font-size: 3rem;
+    color: #0d6efd;
+    opacity: 0.9;
+}
+
+.error-404-actions .btn {
+    min-width: 10rem;
+}

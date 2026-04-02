@@ -14,9 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+
+from . import views as project_views
 
 
 urlpatterns = [
@@ -31,3 +34,10 @@ urlpatterns = [
     path('home/', include('home.urls')),
     path('logout/', auth_views.LogoutView.as_view(next_page='landing:index'), name='logout'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path('__preview__/404/', project_views.preview_404, name='preview_404'),
+    ]
+
+handler404 = 'comicstore.views.handler404'
