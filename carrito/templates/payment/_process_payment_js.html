@@ -1,0 +1,74 @@
+{# Partial: función processPayment compartida entre las pasarelas de pago #}
+{# URLs se pasan como data-attributes desde el template que include este partial #}
+{# Uso: {% include 'payment/_process_payment_js.html' with order=order %} #}
+<script id="processPaymentScript"
+    data-simulate-url="{% url 'simulate_payment' order.order_id %}"
+    data-success-url="{% url 'payment_success' order.order_id %}"
+    data-failed-url="{% url 'payment_failed' order.order_id %}">
+
+/**
+ * Función compartida entre todas las pasarelas de pago.
+ * Envía los datos del pago al servidor y redirige según el resultado.
+ * @param {Object} data - Datos de pago a enviar
+ * @param {HTMLElement} submitBtn - Botón que disparó el submit
+ */
+async function processPayment(data, submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+
+    const script = document.getElementById('processPaymentScript');
+    const simulateUrl = script.dataset.simulateUrl;
+    const successUrl  = script.dataset.successUrl;
+    const failedUrl   = script.dataset.failedUrl;
+
+    try {
+        const response = await fetch(simulateUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = successUrl;
+        } else {
+            window.location.href = failedUrl;
+        }
+    } catch (error) {
+        alert('Error al procesar el pago: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Reintentar';
+    }
+}
+
+/**
+ * Formatea un input de número de tarjeta con espacios cada 4 dígitos.
+ * @param {HTMLInputElement} input
+ */
+function initCardNumberFormat(input) {
+    if (!input) return;
+    input.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        e.target.value = value.match(/.{1,4}/g)?.join(' ') || value;
+    });
+}
+
+/**
+ * Formatea un input de fecha de expiración MM/AA.
+ * @param {HTMLInputElement} input
+ */
+function initExpiryFormat(input) {
+    if (!input) return;
+    input.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+}
+</script>

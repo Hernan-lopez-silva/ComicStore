@@ -1,0 +1,7 @@
+{% load static %}
+{# Partial: información de la orden — se incluye con {% include 'payment/_order_info.html' %} #}
+<div class="alert alert-info">
+    <h6 class="mb-2"><strong>Orden #{{ order.order_id }}</strong></h6>
+    <p class="mb-1">Comercio: Comic Store</p>
+    <p class="mb-0"><strong>Total a pagar: ${{ order.total|floatformat:0 }} CLP</strong></p>
+</div>
