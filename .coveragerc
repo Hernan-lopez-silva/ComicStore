@@ -1,0 +1,9 @@
+[run]
+omit =
+    */migrations/*
+    manage.py
+    comicstore/asgi.py
+    comicstore/wsgi.py
+    comicstore/settings*.py
+    agregar_pais.py
+    cargar_*.py
