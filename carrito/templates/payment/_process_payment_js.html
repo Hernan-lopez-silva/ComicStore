@@ -52,7 +52,7 @@ async function processPayment(data, submitBtn) {
 function initCardNumberFormat(input) {
     if (!input) return;
     input.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\s/g, '');
+        let value = e.target.value.replaceAll(/\s/g, '');
         e.target.value = value.match(/.{1,4}/g)?.join(' ') || value;
     });
 }
@@ -64,7 +64,7 @@ function initCardNumberFormat(input) {
 function initExpiryFormat(input) {
     if (!input) return;
     input.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
+        let value = e.target.value.replaceAll(/\D/g, '');
         if (value.length >= 2) {
             value = value.slice(0, 2) + '/' + value.slice(2, 4);
         }
