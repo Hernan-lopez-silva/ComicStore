@@ -11,6 +11,7 @@ Uso:
 """
 
 import sys
+import os
 import io
 import time
 import unittest
@@ -27,7 +28,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # ── Configuracion ─────────────────────────────────────────────────────────────
-BASE_URL    = "http://127.0.0.1:8000"
+BASE_URL    = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")
 NORMAL_USER = {"username": "testuser", "password": "TestPass123!"}
 SUPER_USER  = {"username": "admin",    "password": "admin"}
 TIMEOUT     = 10

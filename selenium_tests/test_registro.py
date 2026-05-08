@@ -15,6 +15,7 @@ Uso:
 """
 
 import sys
+import os
 import io
 import time
 import uuid
@@ -31,7 +32,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # ── Configuracion ─────────────────────────────────────────────────────────────
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")
 TIMEOUT  = 10
 HEADLESS = False
 # ─────────────────────────────────────────────────────────────────────────────

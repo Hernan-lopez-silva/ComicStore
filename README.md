@@ -130,3 +130,50 @@ Ejemplos locales:
 ## Despliegue de referencia
 
 - URL: `https://comicstore.up.railway.app/`
+- Entorno PythonAnywhere: `http://jsaavedrap.pythonanywhere.com/`
+
+## Pruebas Automatizadas (Selenium)
+
+El proyecto incluye 37 pruebas automatizadas de interfaz de usuario (UI) que verifican el correcto funcionamiento de los flujos principales (Login, Carrito, Búsqueda y Registro).
+
+### Ejecutar Pruebas Localmente
+
+Asegúrate de que el servidor de desarrollo esté corriendo:
+```powershell
+# En una terminal:
+.\.venv\Scripts\Activate.ps1
+python manage.py runserver
+```
+
+En **otra terminal**, activa tu entorno virtual y ejecuta las pruebas individualmente:
+```powershell
+.\.venv\Scripts\Activate.ps1
+
+python selenium_tests\test_login.py
+python selenium_tests\test_carrito.py
+python selenium_tests\test_busqueda.py
+python selenium_tests\test_registro.py
+```
+
+O ejecútalas todas juntas usando `pytest`:
+```powershell
+pytest selenium_tests\ -v
+```
+
+### Ejecutar Pruebas contra Producción (PythonAnywhere)
+
+Los scripts están configurados para correr localmente (`http://127.0.0.1:8000`) por defecto. Si el ambiente de producción (`http://jsaavedrap.pythonanywhere.com/`) está activo y quieres apuntar las pruebas hacia allá, puedes usar la variable de entorno `TEST_BASE_URL`.
+
+**En Windows (PowerShell):**
+```powershell
+$env:TEST_BASE_URL="http://jsaavedrap.pythonanywhere.com"
+pytest selenium_tests\ -v
+```
+
+**En Windows (CMD):**
+```cmd
+set TEST_BASE_URL=http://jsaavedrap.pythonanywhere.com
+pytest selenium_tests\ -v
+```
+
+*Nota: Para que las pruebas pasen en producción, la base de datos de producción debe tener cargados los cómics base y el usuario de pruebas `testuser`.*
