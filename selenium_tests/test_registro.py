@@ -16,7 +16,6 @@ Uso:
 
 import sys
 import os
-import io
 import time
 import uuid
 import unittest
@@ -28,8 +27,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # ── Configuracion ─────────────────────────────────────────────────────────────
 BASE_URL = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")

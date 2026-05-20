@@ -155,9 +155,9 @@ python selenium_tests\test_busqueda.py
 python selenium_tests\test_registro.py
 ```
 
-O ejecútalas todas juntas usando `pytest`:
+O ejecútalas todas juntas usando `pytest` (usar bandera `-s` para ver el log paso a paso y evitar conflictos con la consola):
 ```powershell
-pytest selenium_tests\ -v
+pytest selenium_tests\ -v -s
 ```
 
 ### Ejecutar Pruebas contra Producción (PythonAnywhere)
@@ -166,14 +166,16 @@ Los scripts están configurados para correr localmente (`http://127.0.0.1:8000`)
 
 **En Windows (PowerShell):**
 ```powershell
+.\.venv\Scripts\Activate.ps1
 $env:TEST_BASE_URL="http://jsaavedrap.pythonanywhere.com"
-pytest selenium_tests\ -v
+pytest selenium_tests\ -v -s
 ```
 
 **En Windows (CMD):**
 ```cmd
+.\.venv\Scripts\activate.bat
 set TEST_BASE_URL=http://jsaavedrap.pythonanywhere.com
-pytest selenium_tests\ -v
+pytest selenium_tests\ -v -s
 ```
 
 *Nota: Para que las pruebas pasen en producción, la base de datos de producción debe tener cargados los cómics base y el usuario de pruebas `testuser`.*
