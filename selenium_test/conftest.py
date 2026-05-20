@@ -202,7 +202,7 @@ def wait_short(driver):
 @pytest.fixture
 def app_url():
     """URL base de la aplicación."""
-    return "http://localhost:8000"  # Ajusta según tu ambiente
+    return "http://127.0.0.1:8000" 
 
 
 # ============================================================================
