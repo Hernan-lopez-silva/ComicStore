@@ -1,0 +1,21 @@
+# Dependencias para tests de Selenium de ComicStore
+
+# Testing Framework
+pytest==7.4.3
+pytest-xdist==3.5.0          # Ejecución paralela
+pytest-timeout==2.2.0        # Timeout para tests
+pytest-html==4.1.1           # Reporte HTML
+pytest-cov==4.1.0            # Coverage
+
+# Selenium
+selenium==4.15.2
+webdriver-manager==4.0.1     # Gestión automática de drivers
+
+# Utilities
+python-dotenv==1.0.0         # Variables de entorno
+requests==2.31.0             # HTTP requests
+
+# Development
+black==23.12.0               # Code formatter
+flake8==6.1.0                # Linter
+pylint==3.0.3                # Code quality
