@@ -179,3 +179,46 @@ pytest selenium_tests\ -v -s
 ```
 
 *Nota: Para que las pruebas pasen en producción, la base de datos de producción debe tener cargados los cómics base y el usuario de pruebas `testuser`.*
+
+## Pruebas de Carga y Estrés (Locust)
+
+El proyecto incorpora pruebas de carga automatizadas mediante **Locust** que simulan el comportamiento de múltiples usuarios concurrentes interactuando con los módulos principales de ComicStore.
+
+### Características del Script de Carga:
+- **Autenticación Automática (Login):** Simula el inicio de sesión del usuario de prueba (`testuser`), gestionando de manera dinámica las cookies y el token de seguridad `csrfmiddlewaretoken` de Django.
+- **Flujos Ponderados (Weights):** Simula navegación general por la home, búsquedas de productos de interés, vista de detalle de cómics y revisión del carrito de compras.
+- **Trazas en Consola:** Cada acción realizada por los usuarios virtuales deja un log explicativo detallado en consola, ideal para auditorías o evidencias.
+
+### Requisitos Previos
+1. Tener el servidor local corriendo en `http://127.0.0.1:8000/`.
+2. Tener instalado Locust en tu entorno virtual (`pip install -r requirements.txt`).
+
+### Ejecución de Pruebas
+
+#### Opción 1: Con interfaz web interactiva
+Para configurar la simulación de forma visual e interactiva:
+
+1. Ejecuta el comando en tu terminal (con tu entorno virtual activo):
+   ```powershell
+   locust
+   ```
+2. Abre tu navegador en la URL: **`http://localhost:8089`**
+3. Define los siguientes parámetros iniciales:
+   - **Number of users:** Cantidad máxima de usuarios concurrentes (ej. `50`).
+   - **Spawn rate:** Cantidad de usuarios creados por segundo (ej. `5`).
+   - **Host:** La URL del servidor local: `http://127.0.0.1:8000`
+4. Haz clic en **Start swarming** para ver los gráficos de rendimiento en tiempo real.
+
+#### Opción 2: Modo No-Interactivo (Headless) - Generación de Evidencia 📄
+Esta opción ejecuta las pruebas de forma automática durante un tiempo definido y exporta un **reporte HTML detallado** y gráficos completos directamente a la carpeta `reports/` como evidencia del análisis de rendimiento.
+
+Ejecuta el siguiente comando en tu terminal de PowerShell:
+```powershell
+.venv\Scripts\locust.exe --headless -u 20 -r 2 --run-time 1m --html reports/locust_report.html
+```
+
+*Parámetros del comando:*
+- `-u 20`: Simula 20 usuarios simultáneos.
+- `-r 2`: Agrega 2 nuevos usuarios por segundo hasta llegar al máximo.
+- `--run-time 1m`: Duración total de la prueba (1 minuto).
+- `--html reports/locust_report.html`: Ubicación y nombre del archivo de reporte HTML generado como evidencia del análisis.
