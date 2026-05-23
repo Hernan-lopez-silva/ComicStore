@@ -7,3 +7,7 @@ omit =
     comicstore/settings*.py
     agregar_pais.py
     cargar_*.py
+    selenium_test/*
+    selenium_tests/*
+    pythonanywhere_wsgi.py
+    locustfile.py

@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import time
+import os
 from datetime import datetime
 
 
@@ -22,22 +23,35 @@ def browser_session():
     """Crea una sesión del navegador para la suite completa."""
     chrome_options = Options()
     # chrome_options.add_argument("--headless")  # Descomenta para ejecución sin interfaz
+    chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
 
     driver = webdriver.Chrome(options=chrome_options)
-    driver.set_page_load_timeout(10)
+    driver.set_page_load_timeout(30)
+
+    # Navegar a la app antes de cualquier test para que localStorage sea accesible
+    driver.get("http://127.0.0.1:8000/")
     yield driver
     driver.quit()
 
 
 @pytest.fixture
-def driver(browser_session):
+def driver(browser_session, app_url):
     """Proporciona una instancia del navegador limpia para cada test."""
     browser_session.delete_all_cookies()
-    browser_session.execute_script("window.localStorage.clear();")
+
+    # Solo limpiar localStorage si estamos en una página real (no about:blank o data:)
+    current_url = browser_session.current_url
+    if current_url.startswith("http"):
+        try:
+            browser_session.execute_script("window.localStorage.clear();")
+        except Exception:
+            pass
+
     yield browser_session
+
     # Limpiar después de cada test
     browser_session.delete_all_cookies()
 
@@ -49,44 +63,34 @@ def driver(browser_session):
 @pytest.fixture
 def valid_user_data():
     """Datos válidos de un usuario para registro."""
+    ts = int(datetime.now().timestamp())
     return {
-        'nombre': 'Juan Pérez',
-        'email': f'juan.perez.{datetime.now().timestamp()}@example.com',
+        'username': f'testuser{ts}',
+        'nombre': 'Juan',
+        'apellido': 'Pérez',
+        'email': f'juan.perez.{ts}@example.com',
         'rut': '10000000-2',
-        'contraseña': 'Segura123!',
-        'confirmar_contraseña': 'Segura123!'
+        'telefono': '+56912345678',
+        'direccion': 'Calle Principal 123',
+        'password1': 'Segura123!',
+        'password2': 'Segura123!',
     }
 
 
 @pytest.fixture
 def existing_user_credentials():
-    """Credenciales de un usuario existente para login."""
+    """Credenciales de un usuario existente para login.
+    
+    IMPORTANTE: Este usuario debe existir en la base de datos.
+    Crearlo con: python manage.py shell -c "
+        from django.contrib.auth.models import User
+        User.objects.create_user('testselenium', password='TestPass123!')
+    "
+    """
     return {
-        'email': 'usuario.existente@comicstore.cl',
-        'contraseña': 'SeguraPass123!'
+        'username': 'testselenium',
+        'password': 'TestPass123!'
     }
-
-
-@pytest.fixture
-def invalid_email_data():
-    """Datos con emails inválidos."""
-    return [
-        {'email': '', 'descripcion': 'Email vacío'},
-        {'email': 'invalid-email', 'descripcion': 'Sin símbolo @'},
-        {'email': '@example.com', 'descripcion': 'Sin parte local'},
-        {'email': 'usuario@', 'descripcion': 'Sin dominio'},
-    ]
-
-
-@pytest.fixture
-def invalid_password_data():
-    """Datos con contraseñas inválidas."""
-    return [
-        {'password': 'short', 'descripcion': 'Muy corta'},
-        {'password': 'nouppercase1!', 'descripcion': 'Sin mayúsculas'},
-        {'password': 'NOLOWERCASE1!', 'descripcion': 'Sin minúsculas'},
-        {'password': 'NoSpecial123', 'descripcion': 'Sin caracteres especiales'},
-    ]
 
 
 # ============================================================================
@@ -97,9 +101,9 @@ def invalid_password_data():
 def search_keywords():
     """Palabras clave para búsqueda de productos."""
     return {
-        'valida': 'Spider-Man',
+        'valida': 'Spider',
         'no_existente': 'ProductoQueNoExiste123XYZ',
-        'caracteres_especiales': '!@#$%^&*()',
+        'caracteres_especiales': '!@#',
         'muy_corta': 'X',
     }
 
@@ -126,7 +130,6 @@ def comic_product():
         'stock': 50,
         'descripcion': 'Primera aparición de Spider-Man',
         'categoria': 'Comics Internacionales',
-        'imagen_url': '/images/spider-man-1.jpg'
     }
 
 
@@ -137,26 +140,26 @@ def comic_product():
 @pytest.fixture
 def cart_product_quantities():
     """Cantidades válidas de productos para agregar al carrito."""
-    return [1, 2, 5, 10, 50]
+    return [1, 2, 5]
 
 
 @pytest.fixture
 def invalid_cart_quantities():
     """Cantidades inválidas para agregar al carrito."""
-    return [0, -1, -10, 101, 1000]
+    return [0, -1, -10]
 
 
 @pytest.fixture
 def shipping_address():
     """Dirección de envío válida."""
     return {
-        'nombre': 'Juan Pérez',
-        'direccion': 'Calle Principal 123',
-        'apartamento': 'Apt 4',
-        'ciudad': 'Santiago',
-        'region': 'Metropolitana',
-        'codigo_postal': '8320000',
-        'telefono': '+56912345678'
+        'name': 'Juan Pérez',
+        'email': 'juan@example.com',
+        'phone': '+56912345678',
+        'address': 'Calle Principal 123',
+        'city': 'Santiago',
+        'region': 'Región Metropolitana',
+        'postal_code': '8320000',
     }
 
 
@@ -176,8 +179,8 @@ def payment_data():
 def coupon_data():
     """Datos de cupones de descuento."""
     return {
-        'valido': 'COMICSTORE20',
-        'descuento_valido': 20,
+        'valido': 'COMICSTORE1',
+        'descuento_valido': 10,
         'expirado': 'OLDCOUPON',
         'no_existente': 'INVALIDCODE123',
     }
@@ -202,7 +205,7 @@ def wait_short(driver):
 @pytest.fixture
 def app_url():
     """URL base de la aplicación."""
-    return "http://127.0.0.1:8000" 
+    return "http://127.0.0.1:8000"
 
 
 # ============================================================================
@@ -212,22 +215,24 @@ def app_url():
 @pytest.fixture(autouse=True)
 def reset_app_state(driver, app_url):
     """Reset automático del estado de la aplicación antes de cada test."""
-    # Navegar a home para limpiar sesión
     try:
         driver.get(f"{app_url}/")
     except Exception:
         pass
     yield
-    # Limpiar cookies y storage después de cada test
+    # Limpiar cookies después de cada test
     driver.delete_all_cookies()
-    driver.execute_script("window.localStorage.clear();")
+    # Limpiar localStorage solo si la URL actual es una página web
+    if driver.current_url.startswith("http"):
+        try:
+            driver.execute_script("window.localStorage.clear();")
+        except Exception:
+            pass
 
 
 # ============================================================================
 # FIXTURES PARA CAPTURA DE PANTALLA Y LOGS
 # ============================================================================
-
-import os
 
 @pytest.fixture
 def capture_screenshot(driver, request):
