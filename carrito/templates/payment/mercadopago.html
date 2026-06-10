@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formato_pesos %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">
 <style>
@@ -123,7 +124,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                Pagar ${{ order.total|floatformat:0 }}
+                                Pagar ${{ order.total|punto_miles }}
                             </button>
                         </div>
                     </form>
@@ -147,7 +148,7 @@
 
                         <div class="alert alert-success">
                             <i class="fas fa-check-circle"></i> 
-                            Saldo disponible: ${{ order.total|add:"50000"|floatformat:0 }}
+                            Saldo disponible: ${{ order.total|add:"50000"|punto_miles }}
                         </div>
 
                         <div class="d-grid gap-2">

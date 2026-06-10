@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formato_pesos %}
 {% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
 {% block title %}Mis Órdenes - Comic Store{% endblock %}
 {% block content %}
@@ -63,7 +64,7 @@
 
                         <!-- Total y Acciones -->
                         <div class="col-md-3 text-md-end">
-                            <h5 class="mb-2">${{ order.total|floatformat:0 }}</h5>
+                            <h5 class="mb-2">${{ order.total|punto_miles }}</h5>
                             <div class="btn-group" role="group">
                                 <a href="{% url 'order_detail' order.order_id %}" 
                                    class="btn btn-sm btn-outline-primary">

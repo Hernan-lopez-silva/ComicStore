@@ -7,17 +7,17 @@ import re
 from django.core.exceptions import ValidationError
 
 class FormCliente(UserCreationForm):
-    nombre = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Nombre:")
-    apellido = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Apellido:")
-    rut = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="RUT:")
-    email = forms.EmailField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Correo electrónico:")
-    telefono = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Teléfono:")
-    direccion = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Dirección:")
+    nombre = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Nombre:", error_messages={'required': 'El nombre es obligatorio.'})
+    apellido = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Apellido:", error_messages={'required': 'El apellido es obligatorio.'})
+    rut = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="RUT:", error_messages={'required': 'El RUT es obligatorio.'})
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Correo electrónico:", error_messages={'required': 'El correo es obligatorio.'})
+    telefono = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Teléfono:", error_messages={'required': 'El teléfono es obligatorio.'})
+    direccion = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-3'}), label="Dirección:", error_messages={'required': 'La dirección es obligatoria.'})
     pais = forms.CharField(widget=forms.Select(attrs={'class': 'form-control mb-3', 'id':'pais'}), label="País:")
     region = forms.CharField(widget=forms.Select(attrs={'class': 'form-control mb-3', 'id':'region'}), label="Región:")
     comuna = forms.CharField(widget=forms.Select(attrs={'class': 'form-control mb-3', 'id':'comuna'}), label="Comuna:")
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-3'}), label="Contraseña:")
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-3'}), label="Confirmar contraseña:")
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-3'}), label="Contraseña:", error_messages={'required': 'La contraseña es obligatoria.'})
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-3'}), label="Confirmar contraseña:", error_messages={'required': 'La confirmación de la contraseña es obligatoria.'})
     
     class Meta:
         model = User
@@ -54,12 +54,13 @@ class FormCliente(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(FormCliente, self).__init__(*args, **kwargs)
         self.fields['username'].help_text = None
+        self.fields['username'].error_messages = {'required': 'El nombre de usuario es obligatorio.'}
         self.fields['pais'].required = True
-        self.fields['pais'].error_messages = {'required': 'Por favor, seleccione un país.'}
+        self.fields['pais'].error_messages = {'required': 'El país es obligatorio.'}
         self.fields['region'].required = True
-        self.fields['region'].error_messages = {'required': 'Por favor, seleccione una región.'}
+        self.fields['region'].error_messages = {'required': 'La región es obligatoria.'}
         self.fields['comuna'].required = True
-        self.fields['comuna'].error_messages = {'required': 'Por favor seleccione una comuna.'}
+        self.fields['comuna'].error_messages = {'required': 'La comuna es obligatoria.'}
 
     def clean_rut(self):
         rut = self.cleaned_data['rut']
@@ -69,6 +70,12 @@ class FormCliente(UserCreationForm):
         elif Cliente.objects.filter(rut=rut).exists():
             raise ValidationError("El rut ya está registrado.")
         return rut    
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("El correo ya está registrado.")
+        return email
 
     def clean_telefono(self):
         telefono = self.cleaned_data['telefono']

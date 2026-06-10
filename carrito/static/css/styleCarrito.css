@@ -13,6 +13,10 @@
     padding: 20px; /* Espaciado interno del formulario */
 }
 
+.fa-trash-can {
+    cursor: pointer;
+}
+
 .thumbnail {
     width: 40%;
     height: 40%;

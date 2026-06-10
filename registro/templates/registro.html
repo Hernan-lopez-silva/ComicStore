@@ -4,11 +4,72 @@
 {% block title %}Comicstore - Contacto{% endblock %}
 {% block content %}
 <div>
-    <form class="formulario mb-5" method="post">
+    <form class="formulario mb-5" method="post" novalidate>
         <h1>¡Bienvenido!</h1>
         <h4>Registro de nuevo usuario</h4>
-                {% csrf_token %}    
-                {{ form.as_div }}
+                {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.nombre.label_tag }}
+            {{ form.nombre }}
+            {% if form.nombre.errors %}<div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.apellido.label_tag }}
+            {{ form.apellido }}
+            {% if form.apellido.errors %}<div class="text-danger small mt-1">{{ form.apellido.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.rut.label_tag }}
+            {{ form.rut }}
+            {% if form.rut.errors %}<div class="text-danger small mt-1">{{ form.rut.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.telefono.label_tag }}
+            {{ form.telefono }}
+            {% if form.telefono.errors %}<div class="text-danger small mt-1">{{ form.telefono.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.direccion.label_tag }}
+            {{ form.direccion }}
+            {% if form.direccion.errors %}<div class="text-danger small mt-1">{{ form.direccion.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.pais.label_tag }}
+            {{ form.pais }}
+            {% if form.pais.errors %}<div class="text-danger small mt-1">{{ form.pais.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.region.label_tag }}
+            {{ form.region }}
+            {% if form.region.errors %}<div class="text-danger small mt-1">{{ form.region.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.comuna.label_tag }}
+            {{ form.comuna }}
+            {% if form.comuna.errors %}<div class="text-danger small mt-1">{{ form.comuna.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {% if form.password1.errors %}<div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>{% endif %}
+        </div>
+
         <div class="text-center mt-3">
             <button id="registrar" type="submit" class="btn btn-primary">Registrarse</button>
         </div>        

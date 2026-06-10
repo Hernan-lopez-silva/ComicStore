@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formato_pesos %}
 {% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
 {% block title %}Pago Exitoso{% endblock %}
 {% block content %}
@@ -31,7 +32,7 @@
                                 <strong>Orden:</strong> #{{ order.order_id }}
                             </div>
                             <div class="col-md-6 mb-2">
-                                <strong>Total:</strong> ${{ order.total|floatformat:0 }}
+                                <strong>Total:</strong> ${{ order.total|punto_miles }}
                             </div>
                             {% if simulation %}
                             <div class="col-md-6 mb-2">
@@ -84,29 +85,29 @@
                                         <tr>
                                             <td>{{ item.comic_title }}</td>
                                             <td class="text-center">{{ item.quantity }}</td>
-                                            <td class="text-end">${{ item.unit_price|floatformat:0 }}</td>
-                                            <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                                            <td class="text-end">${{ item.unit_price|punto_miles }}</td>
+                                            <td class="text-end">${{ item.subtotal|punto_miles }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
-                                            <td class="text-end">${{ order.subtotal|floatformat:0 }}</td>
+                                            <td class="text-end">${{ order.subtotal|punto_miles }}</td>
                                         </tr>
                                         <tr>
                                             <td colspan="3" class="text-end"><strong>Envío:</strong></td>
-                                            <td class="text-end">${{ order.shipping_cost|floatformat:0 }}</td>
+                                            <td class="text-end">${{ order.shipping_cost|punto_miles }}</td>
                                         </tr>
                                         {% if order.payment_fee > 0 %}
                                         <tr>
                                             <td colspan="3" class="text-end"><strong>Comisión:</strong></td>
-                                            <td class="text-end">${{ order.payment_fee|floatformat:2 }}</td>
+                                            <td class="text-end">${{ order.payment_fee|punto_miles }}</td>
                                         </tr>
                                         {% endif %}
                                         <tr class="table-success">
                                             <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                            <td class="text-end"><strong>${{ order.total|floatformat:0 }}</strong></td>
+                                            <td class="text-end"><strong>${{ order.total|punto_miles }}</strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>

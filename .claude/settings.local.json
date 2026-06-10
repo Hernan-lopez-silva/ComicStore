@@ -1,5 +1,11 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\crazy\\\\Desktop\\\\ComicStore\\\\Comicstore\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(find /mnt/c/Users/crazy/Desktop/ComicStore/Comicstore -type d | sort)"
+    ],
     "additionalDirectories": [
       "c:\\Users\\crazy\\Desktop\\ComicStore\\Comicstore\\PruebaDesarrolloWeb3"
     ]

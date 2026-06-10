@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formato_pesos %}
 {% block css %}<link rel="stylesheet" href="{% static 'css/styleCarrito.css' %}">{% endblock %}
 {% block title %}Pago Rechazado{% endblock %}
 {% block content %}
@@ -45,7 +46,7 @@
                                     <strong>Orden:</strong> #{{ order.order_id }}
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <strong>Monto:</strong> ${{ order.total|floatformat:0 }}
+                                    <strong>Monto:</strong> ${{ order.total|punto_miles }}
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <strong>Método de pago:</strong> {{ order.payment_gateway.display_name }}
@@ -95,15 +96,15 @@
                                         <tr>
                                             <td>{{ item.comic_title }}</td>
                                             <td class="text-center">{{ item.quantity }}</td>
-                                            <td class="text-end">${{ item.unit_price|floatformat:0 }}</td>
-                                            <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                                            <td class="text-end">${{ item.unit_price|punto_miles }}</td>
+                                            <td class="text-end">${{ item.subtotal|punto_miles }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
                                     <tfoot>
                                         <tr class="table-danger">
                                             <td colspan="3" class="text-end"><strong>Total no procesado:</strong></td>
-                                            <td class="text-end"><strong>${{ order.total|floatformat:0 }}</strong></td>
+                                            <td class="text-end"><strong>${{ order.total|punto_miles }}</strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>

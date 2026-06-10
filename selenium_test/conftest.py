@@ -36,9 +36,14 @@ def browser_session():
 def driver(browser_session):
     """Proporciona una instancia del navegador limpia para cada test."""
     browser_session.delete_all_cookies()
-    browser_session.execute_script("window.localStorage.clear();")
+    # Navegar a la app antes de limpiar localStorage:
+    # en una página data: el acceso a localStorage lanza excepción.
+    try:
+        browser_session.get("http://127.0.0.1:8000/")
+        browser_session.execute_script("window.localStorage.clear();")
+    except Exception:
+        pass
     yield browser_session
-    # Limpiar después de cada test
     browser_session.delete_all_cookies()
 
 
@@ -48,34 +53,49 @@ def driver(browser_session):
 
 @pytest.fixture
 def valid_user_data():
-    """Datos válidos de un usuario para registro."""
+    """Datos válidos de un usuario para registro.
+    Parámetros del Word para RF-01-01:
+    juan, Juan Pérez, juan@correo.com, 10000000-2, +56950184516,
+    Chile, Región Metropolitana, Maipú, Segura123!
+    """
     return {
-        'nombre': 'Juan Pérez',
-        'email': f'juan.perez.{datetime.now().timestamp()}@example.com',
+        'username': 'juan',
+        'nombre': 'Juan',
+        'apellido': 'Pérez',
+        'email': 'juan@correo.com',
         'rut': '10000000-2',
-        'contraseña': 'Segura123!',
-        'confirmar_contraseña': 'Segura123!'
+        'telefono': '+56950184516',
+        'direccion': 'Calle Principal 123',
+        'pais': '1',
+        'region': '16',
+        'comuna': '320',
+        'password1': 'Segura123!',
+        'password2': 'Segura123!',
     }
 
 
 @pytest.fixture
 def existing_user_credentials():
-    """Credenciales de un usuario existente para login."""
+    """Credenciales de un usuario existente para login.
+    El usuario debe existir en la base de datos antes de ejecutar los tests.
+    Parámetros del Word - RF-02-01: usuario@correo.com / Segura123!
+    Crear con: python manage.py createsuperuser --username usuario --email usuario@correo.com
+    """
     return {
-        'email': 'usuario.existente@comicstore.cl',
-        'contraseña': 'SeguraPass123!'
+        'username': 'usuario',
+        'password': 'Segura123!',
     }
 
 
 @pytest.fixture
-def invalid_email_data():
-    """Datos con emails inválidos."""
-    return [
-        {'email': '', 'descripcion': 'Email vacío'},
-        {'email': 'invalid-email', 'descripcion': 'Sin símbolo @'},
-        {'email': '@example.com', 'descripcion': 'Sin parte local'},
-        {'email': 'usuario@', 'descripcion': 'Sin dominio'},
-    ]
+def admin_credentials():
+    """Credenciales de un superusuario administrador.
+    El usuario debe existir en la base de datos con is_superuser=True.
+    """
+    return {
+        'username': 'admin',
+        'password': 'Admin123!',
+    }
 
 
 @pytest.fixture
@@ -117,16 +137,12 @@ def product_filter_data():
 
 @pytest.fixture
 def comic_product():
-    """Datos de un producto cómic válido."""
+    """Datos de un producto cómic válido para el formulario CRUD."""
     return {
-        'titulo': 'Amazing Spider-Man #1',
-        'autor': 'Stan Lee',
-        'editorial': 'Marvel Comics',
-        'precio': 15000,
-        'stock': 50,
-        'descripcion': 'Primera aparición de Spider-Man',
-        'categoria': 'Comics Internacionales',
-        'imagen_url': '/images/spider-man-1.jpg'
+        'title': 'Amazing Spider-Man Test',
+        'description': 'Primera aparición de Spider-Man - Test',
+        'img_path': '/static/img/test.jpg',
+        'price': '15000',
     }
 
 
@@ -148,15 +164,15 @@ def invalid_cart_quantities():
 
 @pytest.fixture
 def shipping_address():
-    """Dirección de envío válida."""
+    """Dirección de envío válida para el formulario de checkout."""
     return {
-        'nombre': 'Juan Pérez',
-        'direccion': 'Calle Principal 123',
-        'apartamento': 'Apt 4',
-        'ciudad': 'Santiago',
-        'region': 'Metropolitana',
-        'codigo_postal': '8320000',
-        'telefono': '+56912345678'
+        'name': 'Juan Pérez',
+        'email': 'juan@example.com',
+        'phone': '+56912345678',
+        'address': 'Calle Principal 123',
+        'city': 'Santiago',
+        'region': 'Región Metropolitana',
+        'postal_code': '8320000',
     }
 
 
@@ -176,10 +192,9 @@ def payment_data():
 def coupon_data():
     """Datos de cupones de descuento."""
     return {
-        'valido': 'COMICSTORE20',
-        'descuento_valido': 20,
-        'expirado': 'OLDCOUPON',
+        'valido': 'COMICSTORE1',
         'no_existente': 'INVALIDCODE123',
+        'expirado': 'OLDCOUPON',
     }
 
 
@@ -202,7 +217,7 @@ def wait_short(driver):
 @pytest.fixture
 def app_url():
     """URL base de la aplicación."""
-    return "http://127.0.0.1:8000" 
+    return "http://127.0.0.1:8000"
 
 
 # ============================================================================
@@ -212,15 +227,16 @@ def app_url():
 @pytest.fixture(autouse=True)
 def reset_app_state(driver, app_url):
     """Reset automático del estado de la aplicación antes de cada test."""
-    # Navegar a home para limpiar sesión
     try:
         driver.get(f"{app_url}/")
     except Exception:
         pass
     yield
-    # Limpiar cookies y storage después de cada test
     driver.delete_all_cookies()
-    driver.execute_script("window.localStorage.clear();")
+    try:
+        driver.execute_script("window.localStorage.clear();")
+    except Exception:
+        pass
 
 
 # ============================================================================
@@ -253,7 +269,6 @@ def screenshot_on_failure(request, driver):
     """Captura automáticamente si el test falla."""
     yield
 
-    # Solo capturar si el test falló
     if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
         os.makedirs("screenshots", exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -272,3 +287,49 @@ def log_browser_errors(driver):
         errors = [log for log in logs if log['level'] == 'SEVERE']
         return errors
     return _get_errors
+
+
+# ============================================================================
+# SETUP AUTOMÁTICO DE BASE DE DATOS PARA TESTS
+# ============================================================================
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_database():
+    """
+    Crea automáticamente el usuario 'usuario' para los tests de login/logout.
+    Parámetros del Word para RF-02 y RF-05:
+    - username: usuario
+    - email: usuario@correo.com
+    - password: Segura123!
+
+    Requiere que la app Django esté corriendo para acceder a la BD.
+    """
+    import django
+    import os
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'comicstore.settings')
+    django.setup()
+
+    from django.contrib.auth.models import User
+
+    username = 'usuario'
+    email = 'usuario@correo.com'
+    password = 'Segura123!'
+
+    # Crear usuario si no existe
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+    else:
+        # Actualizar email si el usuario ya existe
+        user = User.objects.get(username=username)
+        user.email = email
+        user.set_password(password)
+        user.save()
+
+    yield
+
+    # Cleanup opcional: descomentar si se quiere eliminar el usuario al finalizar tests
+    # User.objects.filter(username=username).delete()

@@ -38,6 +38,17 @@
     cursor: pointer;
 }
 
+.campo-error {
+    display: block;
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.input-invalido {
+    border: 1px solid #dc3545 !important;
+}
+
 @media (max-width: 576px) {
     .navbar .form-control {
         width: 100%;

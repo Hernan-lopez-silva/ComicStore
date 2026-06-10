@@ -1,5 +1,6 @@
     {% extends 'base.html' %}
     {% load static %}
+    {% load formato_pesos %}
     {% block css %}<link rel="stylesheet" href="{% static 'css/styleProducto.css' %}">{% endblock %}
     {% block title %}Comicstore - Producto{% endblock %}
     {% block content %}
@@ -13,7 +14,7 @@
                   <div class="col-lg-8">
                     <div class="card-body">
                       <p id="titleComic" class="card-title titulo">{{ comic.title }}</p>
-                      <p id="priceComic" class="subtitulo">Precio: ${{ comic.price }}</p>
+                      <p id="priceComic" class="subtitulo">Precio: ${{ comic.price|punto_miles }}</p>
                       <p id="idComic" class="info card-text">ID: {{ comic.id }}</p>
                       <p id="statusComic" class="info card_text">Estado: Disponible</p>
                       <div class="mb-1">
@@ -31,7 +32,11 @@
                         </div>
                     </div>
                     <div class="d-grid col-md-6 col-lg-4">
+                        {% if user.is_authenticated %}
                         <button id="carro" type="button" class="btn btn-primary mt-3"><i class="fas fa-shopping-cart me-1"></i><span class="info">Añadir al Carrito</span></button>
+                        {% else %}
+                        <button id="btnLoginRequerido" type="button" class="btn btn-primary mt-3"><i class="fas fa-shopping-cart me-1"></i><span class="info">Añadir al Carrito</span></button>
+                        {% endif %}
                     </div>
                     <div class="mt-3">
                         <p class="spacer2 mt-5 subtitulo">Descripción</p>
@@ -47,6 +52,26 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="modalLoginRequerido">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Inicia sesión para continuar</h5>
+                    <button type="button" class="btn-close btnClose" aria-label="Close"></button>
+                </div>
+                <div class="modal-body mt-3">
+                    <p>Necesitas una cuenta para agregar productos al carrito y realizar tus compras.</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+                    </a>
+                    <button type="button" class="btn btn-secondary btnClose">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="exampleModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -58,7 +83,7 @@
                 </div>
                 <div class="modal-body mt-3">
                     <p>{{ comic.title }}</p>
-                    <p>${{ comic.price }}</p>
+                    <p>${{ comic.price|punto_miles }}</p>
                 </div>
                 <div class="modal-footer">
                     <button id="irCarro" type="button" class="btn btn-primary" onclick="location.href='{% url 'carrito' %}'">Ir al carrito</button>

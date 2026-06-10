@@ -6,9 +6,49 @@
 {% block content %}
 <div class="container my-5">
     <h2 class="mb-4">Editar Comic</h2>
-    <form method="post">
-        {% csrf_token %}  
-        {{ form.as_p }}  
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="{{ form.title.id_for_label }}" class="form-label">Título:</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <span class="campo-error">{{ form.title.errors|join:", " }}</span>
+            {% else %}
+                <span class="campo-error" id="{{ form.title.auto_id }}_error" style="display:none;"></span>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Descripción:</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <span class="campo-error">{{ form.description.errors|join:", " }}</span>
+            {% else %}
+                <span class="campo-error" id="{{ form.description.auto_id }}_error" style="display:none;"></span>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.img_path.id_for_label }}" class="form-label">Ruta de la Imagen:</label>
+            {{ form.img_path }}
+            {% if form.img_path.errors %}
+                <span class="campo-error">{{ form.img_path.errors|join:", " }}</span>
+            {% else %}
+                <span class="campo-error" id="{{ form.img_path.auto_id }}_error" style="display:none;"></span>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.price.id_for_label }}" class="form-label">Precio:</label>
+            {{ form.price }}
+            {% if form.price.errors %}
+                <span class="campo-error">{{ form.price.errors|join:", " }}</span>
+            {% else %}
+                <span class="campo-error" id="{{ form.price.auto_id }}_error" style="display:none;"></span>
+            {% endif %}
+        </div>
+
         <button class="btn btn-primary float-end mt-3" type="submit">Guardar</button>
     </form>
     <a href="{% url 'listar' %}" class="btn btn-primary mt-3">Volver</a>

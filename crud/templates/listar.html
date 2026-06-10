@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formato_pesos %}
 
 {% block css %}<link rel="stylesheet" href="{% static 'css/listar.css' %}">{% endblock %}
 {% block title %}Comicstore - Listar{% endblock %}
@@ -31,7 +32,7 @@
             <tr class="text-center">
                 <td class="align-middle">{{ comic.id }}</td>
                 <td class="align-middle">{{ comic.title }}</td>
-                <td class="align-middle">{{ comic.price }}</td>
+                <td class="align-middle">{{ comic.price|punto_miles }}</td>
                 <td class="text-center"><img class="thumbnail" src="{{ comic.img_path }}" alt=""></td>
                 <td class="align-middle"><a href="{% url 'editar' comic.id %}"><i class="fa-regular fa-pen-to-square fa-2x"></i></a></td>
                 <td class="align-middle"><a href="{% url 'eliminar' comic.id %}" onclick="return confirm('¿Estás seguro de que quieres eliminar este cómic?');"><i class="fa-regular fa-trash-can fa-2x"></i></a></td>
